@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # Video data
-data/
+data/**
 
 # unit test
 test/trim/out
