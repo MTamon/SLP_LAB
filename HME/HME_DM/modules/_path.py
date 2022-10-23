@@ -8,5 +8,6 @@ sys.path.append(MODULE_PATH)
 
 mem_list = os.listdir(MODULE_PATH)
 for m in mem_list:
-    if os.path.isdir(m):
-        sys.path.append("/".join([MODULE_PATH, m]))
+    PATH = "/".join([MODULE_PATH, m])
+    if os.path.isdir(PATH):
+        sys.path.append(PATH)
