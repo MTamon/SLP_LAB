@@ -11,7 +11,7 @@ git clone https://github.com/MTamon/DataFileCollector.git
 ## Running
 ```Bash:
 cd HME/HME_DM
-python process.py \
+screen python process.py \
     --target /mnt/database/CEJC/Version1.0/data \
     --output ../data \
     --log ./log/hme.log \
