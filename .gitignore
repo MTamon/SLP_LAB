@@ -129,10 +129,13 @@ dmypy.json
 .pyre/
 
 # log data
-log/
+log/**
 
 # Vscode launch file
 .vscode
 
 # output site
-out/
+out/**
+
+# dataset
+data/**
