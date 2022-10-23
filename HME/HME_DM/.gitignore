@@ -143,8 +143,8 @@ log/**
 .vscode
 
 # made in outside module
-module/DataFileCollector/
-module/FaceMotionDetection
+# module/DataFileCollector/
+# module/FaceMotionDetection
 
 # output site
 out/**
