@@ -135,10 +135,11 @@ log/**
 .vscode
 
 # output site
-out/**
+out/
 
 # dataset
 data/**
 
 # modules
-modules/**/*
+HME/HME-DM/modules/DataFileCollector/
+HME/HME-DM/modules/FaceMotionDetection/
