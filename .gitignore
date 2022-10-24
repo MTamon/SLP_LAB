@@ -141,5 +141,5 @@ out/
 data/**
 
 # modules
-HME/HME-DM/modules/DataFileCollector/
+HME/HME-DM/modules/DataFileCollector
 HME/HME-DM/modules/FaceMotionDetection/
