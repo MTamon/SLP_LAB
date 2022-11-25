@@ -3,12 +3,12 @@
 from argparse import ArgumentParser
 import os
 from modules import Collector
-from modules import add_args
+from modules import add_fm_args, add_build_args
 
 
 def add_hme_args(parser: ArgumentParser) -> ArgumentParser:
     """add argument"""
-    parser = add_args(parser)
+    parser = add_fm_args(parser)
 
     parser.add_argument(
         "--target",
@@ -32,7 +32,7 @@ def add_hme_args(parser: ArgumentParser) -> ArgumentParser:
     return parser
 
 
-def get_args():
+def get_hme_args():
     """generate ArgumentParser instance."""
     parser = ArgumentParser("This program is for head-motion-estimation analisis.")
     parser = add_hme_args(parser)
@@ -48,7 +48,8 @@ def get_extraction_args(
     file_list = collector.serialize_path_list(file_list)
 
     if output_path[-1] == "/":
-        output_path = output_path[-1]
+        output_path = output_path[:-1]
+    output_path = "/".join(output_path.split("\\"))
 
     database = collector.get_directory_instance()
     db_abspath_len = len(database.get_abspath().split("/"))
@@ -66,3 +67,45 @@ def get_extraction_args(
         ex_arg.append((file, hpe_path, trim_path, None, None))
 
     return ex_arg
+
+
+def add_post_args(parser: ArgumentParser) -> ArgumentParser:
+    """add argument"""
+    parser = add_build_args(parser)
+
+    parser.add_argument(
+        "--original",
+        default="./",
+        type=str,
+        help="Path for original database.",
+    )
+    parser.add_argument(
+        "--hme-result",
+        default="./",
+        type=str,
+        help="Path for hme results.",
+    )
+    parser.add_argument(
+        "--output",
+        default="out",
+        type=str,
+        help="Path for output results.",
+    )
+    parser.add_argument(
+        "--log",
+        default="log",
+        type=str,
+        help="Path for log-file.",
+    )
+
+    return parser
+
+
+def get_post_args():
+    """generate ArgumentParser instance."""
+    parser = ArgumentParser(
+        "This program is for shapping result of head-motion-estimation."
+    )
+    parser = add_post_args(parser)
+
+    return parser.parse_args()

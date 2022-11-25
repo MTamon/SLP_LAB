@@ -5,7 +5,7 @@ from logging import Logger
 import os
 from modules import Collector, Condition
 from modules import Extraction
-from utils import get_args, get_extraction_args
+from utils import get_hme_args, get_extraction_args
 from logger_gen import set_logger
 
 
@@ -70,7 +70,7 @@ class MakeData:
 
 
 if __name__ == "__main__":
-    _args = get_args()
+    _args = get_hme_args()
     _logger = set_logger("DATA_MAKE", _args.log)
 
     processor = MakeData(_logger, _args)
