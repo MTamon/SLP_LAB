@@ -85,12 +85,12 @@ def add_post_args(parser: ArgumentParser) -> ArgumentParser:
         type=str,
         help="Path for hme results.",
     )
-    parser.add_argument(
-        "--output",
-        default="out",
-        type=str,
-        help="Path for output results.",
-    )
+    # parser.add_argument(
+    #     "--output",
+    #     default="out",
+    #     type=str,
+    #     help="Path for output results.",
+    # )
     parser.add_argument(
         "--log",
         default="log",

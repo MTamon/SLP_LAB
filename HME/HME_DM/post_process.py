@@ -46,16 +46,20 @@ class PostProcess:
         self.target = args.original
         self.hme_result = args.hme_result
         self.hme_result_par = os.path.split(self.hme_result)[0]
-        self.output = args.output
+        # self.output = args.output
 
         condition1 = Condition().specify_extention(["mp4"])
         condition1.add_exclude_filename(["_HD", "_SK"])
         condition1.add_condition_func(cejc_condition)
 
         condition2 = []
-        condition2.append(Condition().specify_extention(["wav"]))
+        condition2.append(
+            Condition()
+            .specify_extention(["wav"])
+            .add_exclude_filename(["IC0A", "IC0B", "IC0C"])
+        )
         _condition2 = Condition().specify_extention(["csv"])
-        _condition2.add_contain_filename("luu")
+        _condition2.add_contain_filename(["luu"])
         condition2.append(_condition2)
 
         self.conditions = (condition1, condition2)
@@ -71,10 +75,10 @@ class PostProcess:
         extractor_input = get_extraction_args(self.collector, self.hme_result_par)
         shaper_input = self.builder.get_shape_inputs(extractor_input)
 
-        # generate MuchAV inputs
-        cv_wav_set = self.get_muchav_inputs(out_collector, out_root_path, shaper_input)
+        # generate MatchAV inputs
+        cv_wav_set = self.get_matchav_inputs(out_collector, out_root_path, shaper_input)
 
-        self.builder(shaper_input, cv_wav_set, self.output)
+        self.builder(shaper_input, cv_wav_set, multi_proc=False, redo_shape=False)
 
     def add_new_files(self):
         """add new datas to output site"""
@@ -87,13 +91,15 @@ class PostProcess:
         cloned_path = "/".join([self.hme_result_par, database.name])
         cloned_path = "/".join(cloned_path.split("\\"))
         clone_collector = Collector(self.conditions[1], cloned_path)
+        _db = clone_collector.database.clone(self.conditions[1])
+        clone_collector.database = _db
 
         return (cloned_path, clone_collector)
 
-    def get_muchav_inputs(
+    def get_matchav_inputs(
         self, out_collector: Collector, out_root_path: str, shaper_input
     ) -> List[str]:
-        """get MuchAV __call__()'s inputs"""
+        """get MatchAV __call__()'s inputs"""
         csv_wav_set = []
 
         for sh_subset in shaper_input:
@@ -112,9 +118,9 @@ class PostProcess:
             out_dirc = out_collector.database(search_path)
 
             # shape filemember
-            shaped_list = self.collect_belong_files(out_dirc, sh_name, data_lot)
+            shaped_dicts = self.collect_belong_files(out_dirc, data_lot)
 
-            csv_wav_set.append(shaped_list)
+            csv_wav_set.append(shaped_dicts)
 
         return csv_wav_set
 
@@ -139,32 +145,32 @@ class PostProcess:
             return ""
         else:
             serch_path = "/".join(serch_path)
+            return serch_path
 
-    def collect_belong_files(
-        self, out_dirc: Directory, sh_name: str, data_lot: str
-    ) -> dict:
-        """collect file member .csv and .wav, which much with data_lot"""
-        shaped_list = {".csv": None, ".wav": []}
+    def collect_belong_files(self, out_dirc: Directory, data_lot: str) -> dict:
+        """collect file member .csv and .wav, which match with data_lot"""
+        shaped_dicts = {".csv": None, ".wav": []}
         for mem in out_dirc.file_member:
-            # muching data-lot for example 'C002_006a_...' => data_lot is 'a'
+            # matching data-lot for example 'C002_006a_...' => data_lot is 'a'
             _data_lot = None
-            if re.search(r"[a-z]", mem.split("_")[1]) is not None:
-                _data_lot = sh_name.split("_")[1][-1]
+            mem_name = os.path.basename(mem)
+            if re.search(r"[a-z]", re.split(r"[_-]", mem_name)[1]) is not None:
+                _data_lot = re.split(r"[_-]", mem_name)[1][-1]
             if _data_lot != data_lot:
                 continue
 
             res_dict = {}
             res_dict["path"] = mem
             res_dict["name"] = os.path.basename(mem)
-            res_dict["extn"] = os.path.splitext(mem)
+            res_dict["extn"] = os.path.splitext(mem)[-1]
             res_dict["dlot"] = _data_lot
 
             if res_dict["extn"] == ".csv":
-                shaped_list[".csv"] = res_dict
+                shaped_dicts[".csv"] = res_dict
             elif res_dict["extn"] == ".wav":
-                shaped_list[".wav"].append(res_dict)
+                shaped_dicts[".wav"].append(res_dict)
 
-        return shaped_list
+        return shaped_dicts
 
 
 if __name__ == "__main__":
