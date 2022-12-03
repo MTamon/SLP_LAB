@@ -91,18 +91,6 @@ def add_post_args(parser: ArgumentParser) -> ArgumentParser:
         type=str,
         help="Path for log-file.",
     )
-    parser.add_argument(
-        "--single-process",
-        default=False,
-        action="store_true",
-        help="When using this option, multiprocess is not used.",
-    )
-    parser.add_argument(
-        "--skip-shaper",
-        default=False,
-        action="store_true",
-        help="When using this option, skip shaper process",
-    )
 
     return parser
 

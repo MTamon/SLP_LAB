@@ -43,9 +43,6 @@ class PostProcess:
         self.logger = logger
         self.args = args
 
-        self.multi_proc = not args.single_process
-        self.redo_shape = not args.skip_shaper
-
         self.target = args.original
         self.hme_result = args.hme_result
         self.hme_result_par = os.path.split(self.hme_result)[0]
@@ -81,12 +78,7 @@ class PostProcess:
         # generate MatchAV inputs
         cv_wav_set = self.get_matchav_inputs(out_collector, out_root_path, shaper_input)
 
-        self.builder(
-            shaper_input,
-            cv_wav_set,
-            multi_proc=self.multi_proc,
-            redo_shape=self.redo_shape,
-        )
+        self.builder(shaper_input, cv_wav_set)
 
     def add_new_files(self):
         """add new datas to output site"""
