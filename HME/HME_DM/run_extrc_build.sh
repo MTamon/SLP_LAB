@@ -14,7 +14,7 @@ python process.py \
 --sub-track-volatility 1.0 \
 --sub-size-volatility 0.5 \
 --threshold 0.1 \
---overlap 0.9 \
+--overlap 0.8 \
 --integrate-step 1 \
 --integrate-volatility 0.4 \
 --use-tracking \
