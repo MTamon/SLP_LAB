@@ -24,7 +24,7 @@ python process.py \
 --gc-term 100 \
 --gc-success 0.1 \
 --lost-track 2 \
---process-num 3 \
+--process-num 7 \
 --result-length 1000000 
 
 send-slack-msg "Finish First Analysis Phase."
@@ -36,7 +36,7 @@ python post_process.py \
 --order 7 \
 --noise-subtract 0.2 \
 --mask-subtract 0.05 \
---batch-size 5 \
+--batch-size 7 \
 --threshold-len 60 \
 --threshold-use 0.2 \
 --measure-method vertical 
