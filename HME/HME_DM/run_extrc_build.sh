@@ -2,7 +2,7 @@ python process.py \
 --target /mnt/database/CEJC/Version1.0/data \
 --output ../data \
 --log ./log/hme.log \
---min-detection-confidence 0.7 \
+--min-detection-confidence 0.6 \
 --min-tracking-confidence 0.5 \
 --max-num-face 1 \
 --model-selection 1 \
@@ -14,14 +14,15 @@ python process.py \
 --sub-track-volatility 1.0 \
 --sub-size-volatility 0.5 \
 --threshold 0.1 \
+--threshold_size_rate 2.0
 --overlap 0.8 \
 --integrate-step 1 \
 --integrate-volatility 0.4 \
 --use-tracking \
---prohibit-integrate 0.7 \
+--prohibit-integrate 1.1 \
 --size-limit-rate 4 \
 --gc 0.03 \
---gc-term 100 \
+--gc-term 300 \
 --gc-success 0.1 \
 --lost-track 2 \
 --process-num 7 \

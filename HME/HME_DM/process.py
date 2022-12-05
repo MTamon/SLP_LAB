@@ -45,10 +45,12 @@ class MakeData:
         self.output = args.output
 
         condition1 = Condition().specify_extention(["mp4"])
+        condition1.add_exclude_dirc(["DONOT_USE"])
         condition1.add_exclude_filename(["_HD", "_SK"])
         condition1.add_condition_func(cejc_condition)
 
         condition2 = Condition().specify_extention(["wav"])
+        condition2.add_exclude_dirc(["DONOT_USE"])
 
         self.conditions = (condition1, condition2)
 

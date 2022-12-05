@@ -49,18 +49,23 @@ class PostProcess:
         # self.output = args.output
 
         condition1 = Condition().specify_extention(["mp4"])
+        condition1.add_exclude_dirc(["DONOT_USE"])
         condition1.add_exclude_filename(["_HD", "_SK"])
         condition1.add_condition_func(cejc_condition)
 
         condition2 = []
         condition2.append(
             Condition()
+            .add_exclude_dirc(["DONOT_USE"])
             .specify_extention(["wav"])
             .add_exclude_filename(["IC0A", "IC0B", "IC0C"])
         )
-        _condition2 = Condition().specify_extention(["csv"])
-        _condition2.add_contain_filename(["luu"])
-        condition2.append(_condition2)
+        condition2.append(
+            Condition()
+            .add_exclude_dirc(["DONOT_USE"])
+            .specify_extention(["csv"])
+            .add_contain_filename(["luu"])
+        )
 
         self.conditions = (condition1, condition2)
 
