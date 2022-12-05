@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # log data
-log/**
+log/**log**
 
 # Vscode launch file
 .vscode
@@ -138,7 +138,7 @@ log/**
 out/
 
 # dataset
-data/**
+data/**/**
 
 # modules
 HME/HME-DM/modules/DataFileCollector

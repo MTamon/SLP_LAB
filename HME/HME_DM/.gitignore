@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # Video data
-data/**
+data/**/**
 
 # unit test
 test/trim/out
@@ -137,7 +137,7 @@ test/face_mesh/out
 test/out
 
 # log data
-log/**
+log/**log**
 
 # Vscode launch file
 .vscode

@@ -1,0 +1,64 @@
+2022-12-04 18:47:24,727 | INFO | MAKE-SUBSET | USING MEASURE: vertical
+2022-12-04 18:47:24,730 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006a-luu.csv -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006a-luu.csv
+2022-12-04 18:47:24,732 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006a_IC01.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006a_IC01.wav
+2022-12-04 18:47:24,733 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006a_IC02.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006a_IC02.wav
+2022-12-04 18:47:24,737 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006a_IC03.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006a_IC03.wav
+2022-12-04 18:47:24,739 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006b-luu.csv -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006b-luu.csv
+2022-12-04 18:47:24,741 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006b_IC01.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006b_IC01.wav
+2022-12-04 18:47:24,742 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006b_IC02.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006b_IC02.wav
+2022-12-04 18:47:24,743 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006b_IC03.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006b_IC03.wav
+2022-12-04 18:47:24,745 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006c-luu.csv -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006c-luu.csv
+2022-12-04 18:47:24,746 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006c_IC01.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006c_IC01.wav
+2022-12-04 18:47:24,747 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006c_IC02.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006c_IC02.wav
+2022-12-04 18:47:24,748 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/C002_006/C002_006c_IC03.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\C002_006/C002_006c_IC03.wav
+2022-12-04 18:47:24,749 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/K002_018/K002_018-luu.csv -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\K002_018/K002_018-luu.csv
+2022-12-04 18:47:24,751 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/K002_018/K002_018_IC01.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\K002_018/K002_018_IC01.wav
+2022-12-04 18:47:24,752 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/K002_018/K002_018_IC02.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\K002_018/K002_018_IC02.wav
+2022-12-04 18:47:24,752 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/K002_018/K002_018_IC03.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\K002_018/K002_018_IC03.wav
+2022-12-04 18:47:24,753 | INFO | MAKE-SUBSET | exst: C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post/K002_018/K002_018_IC04.wav -> C:\Users\Mikawa\Desktop\Life\GitHub\SLP_LAB\HME\data\test\post_out\post\K002_018/K002_018_IC04.wav
+2022-12-04 18:47:24,947 | INFO | MAKE-SUBSET |  >> Progress: 1/1 << 
+2022-12-04 18:47:31,097 | INFO | MAKE-SUBSET |  >> Progress: 1/5 << 
+2022-12-04 18:47:41,934 | INFO | MAKE-SUBSET |  >> DONE. << 
+2022-12-04 18:47:42,049 | INFO | MAKE-SUBSET |  >> Progress: 1/1 << 
+2022-12-04 18:47:48,822 | INFO | MAKE-SUBSET |  >> Progress: 1/5 << 
+2022-12-04 18:48:00,576 | INFO | MAKE-SUBSET |  >> DONE. << 
+2022-12-04 18:48:00,691 | INFO | MAKE-SUBSET |  >> Progress: 1/1 << 
+2022-12-04 18:48:07,637 | INFO | MAKE-SUBSET |  >> Progress: 1/4 << 
+2022-12-04 18:48:21,293 | INFO | MAKE-SUBSET |  >> DONE. << 
+2022-12-04 18:48:21,312 | INFO | MAKE-SUBSET | BUILDER >> Analysis process done.
+2022-12-04 18:48:21,314 | INFO | MAKE-SUBSET | BUILDER >> Start Optimize process.
+2022-12-04 18:48:28,532 | INFO | MAKE-SUBSET | {'csv': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006a-luu.csv',
+2022-12-04 18:48:28,532 | INFO | MAKE-SUBSET |  'name': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006a.avidx',
+2022-12-04 18:48:28,533 | INFO | MAKE-SUBSET |  'pairs': [{'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006a_GP02_0_0_15665.sh',
+2022-12-04 18:48:28,533 | INFO | MAKE-SUBSET |             'spID': 'IC02',
+2022-12-04 18:48:28,534 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006a_IC02.wav'},
+2022-12-04 18:48:28,534 | INFO | MAKE-SUBSET |            {'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006a_GP01_1_0_15665.sh',
+2022-12-04 18:48:28,535 | INFO | MAKE-SUBSET |             'spID': 'IC01',
+2022-12-04 18:48:28,536 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006a_IC01.wav'}]}
+2022-12-04 18:48:28,546 | INFO | MAKE-SUBSET | {'csv': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006b-luu.csv',
+2022-12-04 18:48:28,547 | INFO | MAKE-SUBSET |  'name': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006b.avidx',
+2022-12-04 18:48:28,547 | INFO | MAKE-SUBSET |  'pairs': [{'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006b_GP02_0_0_7165.sh',
+2022-12-04 18:48:28,548 | INFO | MAKE-SUBSET |             'spID': 'IC02',
+2022-12-04 18:48:28,548 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006b_IC02.wav'},
+2022-12-04 18:48:28,549 | INFO | MAKE-SUBSET |            {'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006b_GP01_0_0_7165.sh',
+2022-12-04 18:48:28,549 | INFO | MAKE-SUBSET |             'spID': 'IC01',
+2022-12-04 18:48:28,550 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006b_IC01.wav'}]}
+2022-12-04 18:48:28,553 | INFO | MAKE-SUBSET | {'csv': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006c-luu.csv',
+2022-12-04 18:48:28,553 | INFO | MAKE-SUBSET |  'name': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006c.avidx',
+2022-12-04 18:48:28,554 | INFO | MAKE-SUBSET |  'pairs': [{'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006c_GP01_0_0_12809.sh',
+2022-12-04 18:48:28,554 | INFO | MAKE-SUBSET |             'spID': 'IC01',
+2022-12-04 18:48:28,555 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/C002_006/C002_006c_IC01.wav'}]}
+2022-12-04 18:48:28,565 | INFO | MAKE-SUBSET | {'csv': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018-luu.csv',
+2022-12-04 18:48:28,566 | INFO | MAKE-SUBSET |  'name': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018.avidx',
+2022-12-04 18:48:28,568 | INFO | MAKE-SUBSET |  'pairs': [{'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_GP02_3_0_39981.sh',
+2022-12-04 18:48:28,568 | INFO | MAKE-SUBSET |             'spID': 'IC04',
+2022-12-04 18:48:28,569 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_IC04.wav'},
+2022-12-04 18:48:28,569 | INFO | MAKE-SUBSET |            {'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_GP01_0_0_39981.sh',
+2022-12-04 18:48:28,570 | INFO | MAKE-SUBSET |             'spID': 'IC02',
+2022-12-04 18:48:28,570 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_IC02.wav'},
+2022-12-04 18:48:28,571 | INFO | MAKE-SUBSET |            {'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_GP01_1_0_39981.sh',
+2022-12-04 18:48:28,572 | INFO | MAKE-SUBSET |             'spID': 'IC01',
+2022-12-04 18:48:28,572 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_IC01.wav'},
+2022-12-04 18:48:28,573 | INFO | MAKE-SUBSET |            {'sh': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_GP02_2_0_39981.sh',
+2022-12-04 18:48:28,573 | INFO | MAKE-SUBSET |             'spID': 'IC03',
+2022-12-04 18:48:28,574 | INFO | MAKE-SUBSET |             'wav': 'C:/Users/Mikawa/Desktop/Life/GitHub/SLP_LAB/HME/data/test/post_out/post/K002_018/K002_018_IC03.wav'}]}

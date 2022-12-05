@@ -135,4 +135,6 @@ log/**
 .vscode
 
 # dataset
-data/**
+data/backup/
+data/data/
+data/test/
