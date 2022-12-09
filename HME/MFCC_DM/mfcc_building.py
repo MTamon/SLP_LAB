@@ -14,7 +14,7 @@ import numpy as np
 
 from feature_extractor import FeatureExtractor
 from logger_gen import set_logger
-from utils import batching
+from utils import batching, get_mfcc_args
 from modules import Collector, Condition
 from modules import load_index_file, load_luu_csv, load_shaped
 from modules import tools
@@ -130,7 +130,7 @@ class Mfcc_Segment:
                 "--used-feature must be 'mfcc' or 'fbank'. But {0}".format(self.feature)
             )
 
-    def __call__(self):
+    def __call__(self) -> Tuple[List[str], float, int]:
 
         idx_set = []
         for i, dt in enumerate(self.idx_ic0a.items()):
@@ -150,13 +150,17 @@ class Mfcc_Segment:
                     results.append(self.phase(*_ba))
 
         _results = []
+        time_all = 0
+        frame_all = 0
         for result in results:
             if result[0] is None:
                 self.logger.info("! Reject data > %s: %s ... %s (%s)", *result[1])
             else:
                 _results.append(result[0])
+                time_all += result[2]["time"]
+                frame_all += result[2]["frame"]
 
-        return _results
+        return (_results, time_all, frame_all)
 
     def phase(self, file_idx, _avidx, _ic0a) -> List[Tuple[str, tuple]]:
         result = []
@@ -210,7 +214,9 @@ class Mfcc_Segment:
                         _name = "_".join(["data", file_idx, segment_id]) + ".seg"
                         _segment_path = "/".join([self.seg_path, _name])
                         self.write_segment(segment, _segment_path)
-                        result.append((_segment_path, None))
+
+                        _info = {"time": term[1] - term[0], "frame": nframe}
+                        result.append((_segment_path, None, _info))
 
                         segment = self.create_segment_dict(fps)
 
@@ -293,20 +299,20 @@ class Mfcc_Segment:
         if fps != self.video_fps:
             name = os.path.basename(pair["sh"])
             log_info = ("fps", name, fps, self.video_fps)
-            result.append((None, log_info))
+            result.append((None, log_info, None))
 
         with wave.open(_ic0a, mode="r") as wf:
             sf = wf.getframerate()
             if sf != self.sample_frequency:
                 name = os.path.basename(_ic0a)
                 log_info = ("sample frequency", name, fps, self.sample_frequency)
-                result.append((None, log_info))
+                result.append((None, log_info, None))
 
             ch = wf.getnchannels()
             if ch != 2:
                 name = os.path.basename(_ic0a)
                 log_info = ("channel", name, fps, 2)
-                result.append((None, log_info))
+                result.append((None, log_info, None))
 
         wav_path = pair["wav"]
         with wave.open(wav_path, mode="r") as wf:
@@ -314,12 +320,12 @@ class Mfcc_Segment:
             if sf != self.sample_frequency:
                 name = os.path.basename(wav_path)
                 log_info = ("sample frequency", name, fps, self.sample_frequency)
-                result.append((None, log_info))
+                result.append((None, log_info, None))
 
             if ch != 1:
                 name = os.path.basename(wav_path)
                 log_info = ("channel", name, fps, 1)
-                result.append((None, log_info))
+                result.append((None, log_info, None))
 
         return result
 
@@ -357,3 +363,16 @@ class Mfcc_Segment:
         # output by pickle
         with open(path, "wb") as f:
             pickle.dump(segment, f)
+
+
+if __name__ == "__main__":
+    _args = get_mfcc_args()
+    _logger = set_logger(_args.log)
+    segmenter = Mfcc_Segment(_args, _logger)
+
+    path_list, _time_all, _frame_all = segmenter()
+
+    for _path in path_list:
+        _logger.info("Create segment : %s", _path)
+    _logger.info("All time  : %s[s]", _time_all)
+    _logger.info("All frame : %s", _frame_all)

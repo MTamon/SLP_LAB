@@ -1,5 +1,5 @@
 """Utils"""
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 
 def batching(data_list: list, batch_size: int) -> list:
@@ -142,7 +142,7 @@ def add_mfcc_args(parser: ArgumentParser) -> ArgumentParser:
     return parser
 
 
-def get_mfcc_args():
+def get_mfcc_args() -> Namespace:
     """generate ArgumentParser instance."""
     parser = ArgumentParser("This program is for head-motion-estimation analisis.")
     parser = add_mfcc_args(parser)
