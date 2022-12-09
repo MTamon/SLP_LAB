@@ -97,6 +97,8 @@ class Mfcc_Segment:
             dither=args.dither,
         )
 
+        if not os.path.isdir(self.output):
+            os.mkdir(self.output)
         self.temp_path = "/".join(re.split(r"[\\]", self.output).append("tmp"))
         if not os.path.isdir(self.temp_path):
             os.mkdir(self.temp_path)
