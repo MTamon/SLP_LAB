@@ -21,6 +21,7 @@ class FeatureExtractor:
         sample_frequency: float = 16000.0,
         frame_length: int = 25,
         frame_shift: int = 10,
+        point: bool = False,
         num_mel_bins: int = 23,
         num_ceps: int = 13,
         lifter_coef: float = 22.0,
@@ -41,10 +42,14 @@ class FeatureExtractor:
             dither (float, optional): Dithering process parameters (noise strength). Defaults to 1.0.
         """
         self.sample_freq = sample_frequency
-        # Convert window width from milliseconds to samples
-        self.frame_size = int(sample_frequency * frame_length * 0.001)
-        # Convert frame shift from milliseconds to samples
-        self.frame_shift = int(sample_frequency * frame_shift * 0.001)
+        if point:
+            self.frame_size = frame_length
+            self.frame_shift = frame_shift
+        else:
+            # Convert window width from milliseconds to samples
+            self.frame_size = int(sample_frequency * frame_length * 0.001)
+            # Convert frame shift from milliseconds to samples
+            self.frame_shift = int(sample_frequency * frame_shift * 0.001)
 
         self.num_mel_bins = num_mel_bins
         self.num_ceps = num_ceps

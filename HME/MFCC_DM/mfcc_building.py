@@ -89,6 +89,7 @@ class Mfcc_Segment:
             sample_frequency=args.sample_frequency,
             frame_length=args.frame_length,
             frame_shift=args.frame_shift,
+            point=True,
             num_mel_bins=args.num_mel_bins,
             num_ceps=args.num_ceps,
             low_frequency=args.low_frequency,
@@ -199,15 +200,11 @@ class Mfcc_Segment:
 
                         term = np.array([start, start + nframe]) / fps
 
-                        _strt = int(self.sample_frequency * term[0])
-                        _stop = int(self.sample_frequency * term[1])
-                        frame_num = _stop - _strt
-
                         segment["cent"] = np.stack(segment["cent"])
                         segment["angl"] = np.stack(segment["angl"])
                         segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
                         segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
-                        segment["ffps"] = frame_num / (term[1] - term[0])
+                        segment["ffps"] = segment["trgt"] / (term[1] - term[0])
                         segment["term"] = term - term[0]
 
                         _name = "_".join(["data", file_idx, segment_id]) + ".seg"

@@ -86,13 +86,13 @@ def add_mfcc_args(parser: ArgumentParser) -> ArgumentParser:
     )
     parser.add_argument(
         "--frame-length",
-        default=25,
+        default=32,
         type=int,
         help="frame-size [ms]. Defaults to 25.",
     )
     parser.add_argument(
         "--frame-shift",
-        default=10,
+        default=13,
         type=int,
         help="Analysis interval (frame shift) [ms]. Defaults to 10.",
     )
