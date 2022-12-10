@@ -1,6 +1,6 @@
 python mfcc_building.py \
---target C:\\Users\\Mikawa\\Desktop\\Life\\GitHub\\SLP_LAB\\HME\\data\\test\\post_out\\post \
---output C:\\Users\\Mikawa\\Desktop\\Life\\GitHub\\SLP_LAB\\HME\\data\\test\\segments \
+--target /mnt/t4/builded \
+--output /mnt/t4/segments \
 --log log/segment.log \
 --segment-size 15 \
 --segment-stride 5 \
@@ -15,4 +15,4 @@ python mfcc_building.py \
 --low-frequency 20 \
 --high-frequency 8000 \
 --dither 1.0 \
---proc-num 7 \
+--proc-num 7
