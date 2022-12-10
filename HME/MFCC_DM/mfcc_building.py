@@ -1,15 +1,14 @@
-from logging import Logger
 from argparse import Namespace
-from typing import Dict, List, Tuple
-from tqdm import tqdm
+from logging import Logger
 from multiprocessing import Pool
-
-from pydub import AudioSegment
-import wave
-import os
-import re
-import pickle
+from typing import Dict, List, Tuple
 import math
+import os
+import pickle
+import re
+import wave
+import sox
+from tqdm import tqdm
 import numpy as np
 
 from feature_extractor import FeatureExtractor
@@ -37,11 +36,11 @@ def wav_condition(path: str) -> bool:
 
 
 def group_key(fname: str) -> str:
-    ftype = re.split(r"_.", fname)[1]
+    ftype = re.split(r"[_.]", fname)[1]
     _ftype = ftype[:3] + "#"
 
-    if len(ftype) > 4:
-        _ftype += ftype[4:]
+    if len(ftype) > 3:
+        _ftype = ftype
 
     return _ftype
 
@@ -89,7 +88,7 @@ class Mfcc_Segment:
             sample_frequency=args.sample_frequency,
             frame_length=args.frame_length,
             frame_shift=args.frame_shift,
-            point=True,
+            # point=True,
             num_mel_bins=args.num_mel_bins,
             num_ceps=args.num_ceps,
             low_frequency=args.low_frequency,
@@ -100,10 +99,10 @@ class Mfcc_Segment:
         self.output = "/".join(re.split(r"[\\]", self.output))
         if not os.path.isdir(self.output):
             os.mkdir(self.output)
-        self.temp_path = "/".join(self.output + "/tmp")
+        self.temp_path = self.output + "/tmp"
         if not os.path.isdir(self.temp_path):
             os.mkdir(self.temp_path)
-        self.seg_path = "/".join(self.output + "/data")
+        self.seg_path = self.output + "/data"
         if not os.path.isdir(self.seg_path):
             os.mkdir(self.seg_path)
 
@@ -136,119 +135,163 @@ class Mfcc_Segment:
     def __call__(self) -> Tuple[List[str], float, int]:
 
         idx_set = []
-        for i, dt in enumerate(self.idx_ic0a.items()):
-            idx_set.append([i, *dt])
+        for i, (_avidx, _ic0a) in enumerate(self.idx_ic0a.items()):
+            avidx = load_index_file(_avidx)
+            for pair in avidx["pairs"]:
 
-        batches = batching(idx_set, batch_size=self.proc_num)
-        iterator = tqdm(batches, desc=" load .avidx :")
+                name = os.path.basename(_ic0a)
+
+                _wav_path = "/".join([self.temp_path, name])
+                if not os.path.isfile(_wav_path):
+                    with wave.open(_ic0a, mode="r") as wav:
+                        if wav.getnchannels() == 2:
+                            trm = sox.Transformer()
+                            trm.convert(n_channels=1)
+                            trm.build(_ic0a, _wav_path)
+                            _ic0a = _wav_path
+                            self.logger.info(" Convert to monaural audio from %s", name)
+                else:
+                    _ic0a = _wav_path
+
+                idx_set.append([i, avidx, _ic0a, pair, False])
+
+        if self.single_proc:
+            batches = idx_set
+        else:
+            batches = batching(idx_set, batch_size=self.proc_num)
 
         results = []
 
-        for batch in iterator:
+        for progres, batch in enumerate(batches):
+            self.logger.info(" >> Progress %s/%s", progres + 1, len(batches))
             if not self.single_proc:
+                batch[0][-1] = True
                 with Pool(processes=None) as pool:
                     results += pool.starmap(self.phase, batch)
             else:
-                for _ba in batch:
-                    results.append(self.phase(*_ba))
+                batch[-1] = True
+                results.append(self.phase(*batch))
 
         _results = []
         time_all = 0
         frame_all = 0
-        for result in results:
-            if result[0] is None:
-                self.logger.info("! Reject data > %s: %s ... %s (%s)", *result[1])
-            else:
-                _results.append(result[0])
-                time_all += result[2]["time"]
-                frame_all += result[2]["frame"]
+        for result_group in results:
+            for result in result_group:
+                if result[0] is None:
+                    self.logger.info("! Reject data > %s: %s ... %s (%s)", *result[1])
+                else:
+                    _results.append(result[0])
+                    time_all += result[2]["time"]
+                    frame_all += result[2]["frame"]
 
         return (_results, time_all, frame_all)
 
-    def phase(self, file_idx, _avidx, _ic0a) -> List[Tuple[str, tuple]]:
+    def phase(
+        self, file_idx, avidx, _ic0a, pair, tqdm_visual=False
+    ) -> List[Tuple[str, tuple]]:
         result = []
 
-        avidx = load_index_file(_avidx)
-        for pair in avidx["pairs"]:
-            wpath = pair["wav"]
-            spkID = pair["spID"]
-            csv_dt = load_luu_csv(avidx["csv"])
-            shp_dt = load_shaped(pair["sh"])
+        name = "_".join(os.path.basename(pair["sh"]).split("_")[:4])
+        name = " " * (17 - len(name)) + name + " "
 
-            fps = shp_dt[3]
-            shp_dt = shp_dt[0]
+        wpath = pair["wav"]
+        spkID = pair["spID"]
+        csv_dt = load_luu_csv(avidx["csv"])
+        shp_dt = load_shaped(pair["sh"])
 
-            _result = self.check_files(pair, fps, _ic0a)
-            if _result != []:
-                result += _result
+        fps = shp_dt[3]
+        shp_dt = shp_dt[0]
+
+        _result = self.check_files(pair, fps, _ic0a)
+        if _result:
+            if tqdm_visual:
+                self.logger.info(" >> ! Reject : %s", name)
+            return _result
+
+        _csv_dt = []
+        for _rec in csv_dt:
+            if _rec["speakerID"].split("_")[0] == spkID:
+                _csv_dt.append(_rec)
+        csv_dt = sorted(_csv_dt, key=lambda x: x.get("startTime", 1e5), reverse=False)
+
+        video_stride = math.ceil(fps * self.segment_stride)
+        video_min_size = math.ceil(fps * self.segment_min_size)
+        video_size = math.ceil(fps * self.segment_size)
+
+        _stride_rest = 0
+        segment_id = 0
+
+        segment = self.create_segment_dict(fps)
+
+        if tqdm_visual:
+            shp_iterator = tqdm(shp_dt, desc=name)
+        else:
+            shp_iterator = shp_dt
+
+        for start, shp_rec in enumerate(shp_iterator):
+            _csv_dt = csv_dt.copy()
+            for _rec in _csv_dt:
+                if _rec["endTime"] < start / fps:
+                    csv_dt.pop(0)
+                else:
+                    break
+            del _csv_dt
+
+            if _stride_rest > 0:
+                _stride_rest -= 1
+                continue
+            if shp_rec["ignore"]:
                 continue
 
-            video_stride = math.ceil(fps * self.segment_stride)
-            video_min_size = math.ceil(fps * self.segment_min_size)
-            video_size = math.ceil(fps * self.segment_size)
-
-            _stride_rest = 0
-            segment_id = 0
-
-            segment = self.create_segment_dict(fps)
-            for start, shp_rec in enumerate(shp_dt):
-                if _stride_rest > 0:
-                    _stride_rest -= 1
-                    continue
-                if shp_rec["ignore"]:
-                    continue
-
-                for nframe in range(video_size + 1):
-                    # finish condition
-                    if shp_rec["ignore"] or nframe == video_size:
-                        if nframe < video_min_size:
-                            segment = self.create_segment_dict(fps)
-                            break
-
-                        term = np.array([start, start + nframe]) / fps
-
-                        segment["cent"] = np.stack(segment["cent"])
-                        segment["angl"] = np.stack(segment["angl"])
-                        segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
-                        segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
-                        segment["ffps"] = segment["trgt"] / (term[1] - term[0])
-                        segment["term"] = term - term[0]
-
-                        _name = "_".join(["data", file_idx, segment_id]) + ".seg"
-                        _segment_path = "/".join([self.seg_path, _name])
-                        self.write_segment(segment, _segment_path)
-
-                        _info = {"time": term[1] - term[0], "frame": nframe}
-                        result.append((_segment_path, None, _info))
-
+            for nframe in range(video_size + 1):
+                # finish condition
+                if shp_rec["ignore"] or nframe == video_size:
+                    if nframe < video_min_size:
                         segment = self.create_segment_dict(fps)
-
-                        _stride_rest = video_stride - 1
+                        _stride_rest = nframe - 1
                         break
 
-                    centroid = shp_dt["centroid"]
-                    euler = tools.rotation_angles(shp_dt["rotate"].T)
+                    term = np.array([start, start + nframe]) / fps
 
-                    segment["cent"].append(centroid)
-                    segment["angl"].append(euler)
+                    segment["cent"] = np.stack(segment["cent"])
+                    segment["angl"] = np.stack(segment["angl"])
+                    segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
+                    segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
+                    segment["ffps"] = len(segment["trgt"]) / (term[1] - term[0])
+                    segment["term"] = term - term[0]
+
+                    assert segment["trgt"].shape == segment["othr"].shape
+
+                    _file_idx, _segment_id = str(file_idx), str(segment_id)
+                    _name = "_".join(["data", _file_idx, _segment_id]) + ".seg"
+                    _segment_path = "/".join([self.seg_path, _name])
+                    self.write_segment(segment, _segment_path)
+                    segment_id += 1
+
+                    _info = {"time": term[1] - term[0], "frame": nframe}
+                    result.append((_segment_path, None, _info))
+
+                    segment = self.create_segment_dict(fps)
+
+                    _stride_rest = video_stride - 1
+                    break
+
+                centroid = shp_rec["centroid"]
+                euler = tools.rotation_angles(shp_rec["rotate"].T)
+
+                segment["cent"].append(centroid)
+                segment["angl"].append(euler)
+
+        return result
 
     def get_feature(self, wav_path, start, stop, csv_dt, spID) -> np.ndarray:
 
         _start = int(self.sample_frequency * start)
         _stop = int(self.sample_frequency * stop)
 
-        name = os.path.basename(wav_path)
+        # name = os.path.basename(wav_path)
 
         np.random.seed(seed=0)
-
-        with wave.open(wav_path, mode="r") as wav:
-            if wav.getnchannels() == 2:
-                _wav_path = "/".join([self.temp_path, name])
-                if not os.path.isfile(_wav_path):
-                    sound = AudioSegment.from_wav(wav_path)
-                    sound = sound.set_channels(1)
-                    sound.export(_wav_path, format="wav")
-                wav_path = _wav_path
 
         with wave.open(wav_path, mode="r") as wav:
 
@@ -260,6 +303,12 @@ class Mfcc_Segment:
 
             segment_wav = _waveform[_start:_stop]
 
+            mask = self.generate_mask(
+                len(segment_wav), start, stop, spID, wav_path, csv_dt
+            )
+            if np.sum(mask) == 0:
+                return np.zeros((len(mask), self.num_mel_bins))
+
             if self.feature == "mfcc":
                 _feature = self.feat_extractor.ComputeMFCC(segment_wav)
                 assert _feature.shape[1] == self.num_ceps
@@ -270,65 +319,76 @@ class Mfcc_Segment:
         _feature = _feature.astype(np.float32)
 
         if self.sep_data:
-            w_name = os.path.basename(wav_path)
-            mask = np.zeros(len(_feature))
-            ffps = len(_feature) / (stop - start)
-
-            for _rec in csv_dt:
-                if _rec["speakerID"] != spID:
-                    continue
-
-                strt_time = _rec["startTime"]
-                stop_time = _rec["endTime"]
-                if not (start <= strt_time <= stop or start <= stop_time <= stop_time):
-                    continue
-
-                luu_strt = max(start, strt_time) - start
-                luu_stop = min(stop, stop_time) - start
-                strt_frame = luu_strt * ffps
-                stop_frame = luu_stop * ffps
-
-                mask[strt_frame:stop_frame] = 1
-
-            if spID in w_name:
-                _feature = mask * _feature
-            else:
-                _feature = (1 - mask) * _feature
+            _feature = mask.reshape((-1, 1)) * _feature
 
         return _feature
 
+    def generate_mask(
+        self, num_samples, start, stop, spID, wav_path, csv_dt
+    ) -> np.ndarray:
+        frame_size = int(self.sample_frequency * self.frame_length * 0.001)
+        frame_shift = int(self.sample_frequency * self.frame_shift * 0.001)
+        flength = (num_samples - frame_size) // frame_shift + 1
+
+        mask = np.zeros(flength)
+        ffps = flength / (stop - start)
+
+        w_name = os.path.basename(wav_path)
+
+        for _rec in csv_dt:
+            strt_time = _rec["startTime"]
+            stop_time = _rec["endTime"]
+            if strt_time > stop:
+                break
+            if not (start <= strt_time <= stop or start <= stop_time <= stop):
+                if not (strt_time <= start and stop <= stop_time):
+                    continue
+
+            if _rec["speakerID"].split("_")[0] != spID:
+                continue
+
+            luu_strt = max(start, strt_time) - start
+            luu_stop = min(stop, stop_time) - start
+            strt_frame = round(luu_strt * ffps)
+            stop_frame = round(luu_stop * ffps)
+
+            mask[strt_frame:stop_frame] = 1
+
+        if spID in w_name:
+            return mask
+        else:
+            return 1 - mask
+
     def check_files(self, pair, fps, _ic0a) -> List[Tuple[str, tuple]]:
+        def check_fps() -> bool:
+            _fps = str(self.video_fps).split(".")
+
+            if len(_fps) == 1:
+                _fps = ""
+            else:
+                _fps = _fps[1]
+
+            return round(fps, len(_fps)) == self.video_fps
+
         result = []
-        if fps != self.video_fps:
+        if not check_fps():
             name = os.path.basename(pair["sh"])
             log_info = ("fps", name, fps, self.video_fps)
             result.append((None, log_info, None))
 
-        with wave.open(_ic0a, mode="r") as wf:
-            sf = wf.getframerate()
-            if sf != self.sample_frequency:
-                name = os.path.basename(_ic0a)
-                log_info = ("sample frequency", name, fps, self.sample_frequency)
-                result.append((None, log_info, None))
+        for wav_path in [pair["wav"], _ic0a]:
+            with wave.open(wav_path, mode="r") as wf:
+                sf = wf.getframerate()
+                if sf != self.sample_frequency:
+                    name = os.path.basename(wav_path)
+                    log_info = ("sample frequency", name, sf, self.sample_frequency)
+                    result.append((None, log_info, None))
 
-            ch = wf.getnchannels()
-            if ch != 2:
-                name = os.path.basename(_ic0a)
-                log_info = ("channel", name, fps, 2)
-                result.append((None, log_info, None))
-
-        wav_path = pair["wav"]
-        with wave.open(wav_path, mode="r") as wf:
-            sf = wf.getframerate()
-            if sf != self.sample_frequency:
-                name = os.path.basename(wav_path)
-                log_info = ("sample frequency", name, fps, self.sample_frequency)
-                result.append((None, log_info, None))
-
-            if ch != 1:
-                name = os.path.basename(wav_path)
-                log_info = ("channel", name, fps, 1)
-                result.append((None, log_info, None))
+                ch = wf.getnchannels()
+                if ch != 1:
+                    name = os.path.basename(wav_path)
+                    log_info = ("channel", name, ch, 1)
+                    result.append((None, log_info, None))
 
         return result
 
@@ -336,8 +396,8 @@ class Mfcc_Segment:
         segment = {
             "cent": [],
             "angl": [],
-            "trgt": [],
-            "othr": [],
+            "trgt": None,
+            "othr": None,
             "vfps": fps,
             "afps": self.sample_frequency,
             "ffps": 0,
@@ -346,12 +406,13 @@ class Mfcc_Segment:
         return segment
 
     def get_file_groups(self) -> Dict[str, str]:
-        _idx_ic0a = self.database.get_terminal_instances()
+        _idx_ic0a = self.database.get_terminal_instances(serialize=True)
         _idx_ic0a = [dirc.get_grouped_path_list(group_key) for dirc in _idx_ic0a]
+
         idx_ic0a = []
-        for _r in _idx_ic0a:
-            assert len(_r) == 2
-            idx_ic0a += _r
+        for _grouped in _idx_ic0a:
+            assert sum([len(_group) == 2 for _group in _grouped]) == len(_grouped)
+            idx_ic0a += _grouped
 
         _d = {}
         for _r in idx_ic0a:
