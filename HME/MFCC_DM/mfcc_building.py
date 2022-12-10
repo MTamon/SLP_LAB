@@ -262,13 +262,14 @@ class Mfcc_Segment:
                     term = _term / fps
 
                     _stride_rest = video_stride - 1
+                    _info = {"time": term[1] - term[0], "frame": nframe}
 
                     _name = "_".join([f_name, str(_term[0]), str(_term[1])]) + ".seg"
                     _segment_path = "/".join([self.seg_path, _name])
                     if os.path.isfile(_segment_path) and not self.redo:
                         segment = self.create_segment_dict(fps)
                         result.append((_segment_path, None, _info))
-                        continue
+                        break
 
                     segment["cent"] = np.stack(segment["cent"])
                     segment["angl"] = np.stack(segment["angl"])
@@ -279,16 +280,10 @@ class Mfcc_Segment:
 
                     assert segment["trgt"].shape == segment["othr"].shape
 
-                    # _file_idx, _segment_id = str(file_idx), str(segment_id)
-                    self.write_segment(segment, _segment_path)
-                    # segment_id += 1
-
-                    _info = {"time": term[1] - term[0], "frame": nframe}
                     result.append((_segment_path, None, _info))
 
+                    self.write_segment(segment, _segment_path)
                     segment = self.create_segment_dict(fps)
-
-                    # _stride_rest = video_stride - 1
                     break
 
                 centroid = shp_rec["centroid"]
