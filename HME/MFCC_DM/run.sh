@@ -15,4 +15,5 @@ python mfcc_building.py \
 --low-frequency 20 \
 --high-frequency 8000 \
 --dither 1.0 \
---proc-num 7
+--proc-num 7 \
+--convert-path -3

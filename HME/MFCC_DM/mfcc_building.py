@@ -78,6 +78,8 @@ class Mfcc_Segment:
         self.proc_num = args.proc_num
         self.single_proc = args.single_proc
 
+        self.convert = args.convert_path
+
         if self.high_frequency * 2 > self.sample_frequency:
             raise ValueError(
                 f"High-frequency must be smaller than half of sample-frequency. \
@@ -137,7 +139,13 @@ class Mfcc_Segment:
         idx_set = []
         for i, (_avidx, _ic0a) in enumerate(self.idx_ic0a.items()):
             avidx = load_index_file(_avidx)
+            avidx["csv"] = self.convert_path(avidx["csv"])
+            avidx["name"] = self.convert_path(avidx["name"])
+
             for pair in avidx["pairs"]:
+
+                pair["wav"] = self.convert_path(pair["wav"])
+                pair["sh"] = self.convert_path(pair["sh"])
 
                 name = os.path.basename(_ic0a)
 
@@ -428,6 +436,16 @@ class Mfcc_Segment:
                 _d[_r[1]] = _r[0]
 
         return _d
+
+    def convert_path(self, path):
+        if self.convert is None:
+            return path
+
+        r_path = re.split(r"[\\/]", path)[self.convert :]
+        _target = re.split(r"[\\/]", self.target)
+        path = "/".join(_target) + "/" + "/".join(r_path)
+
+        return path
 
     def write_segment(self, segment, path):
         # output by pickle

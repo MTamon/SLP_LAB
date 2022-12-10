@@ -138,6 +138,12 @@ def add_mfcc_args(parser: ArgumentParser) -> ArgumentParser:
         action="store_true",
         help="Excute process with single thread. Defaults to False.",
     )
+    parser.add_argument(
+        "--convert-path",
+        default=None,
+        type=int,
+        help="Specially prepared for this experiment.",
+    )
 
     return parser
 
