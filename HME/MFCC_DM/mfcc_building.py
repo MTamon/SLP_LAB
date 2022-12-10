@@ -411,7 +411,8 @@ class Mfcc_Segment:
 
         idx_ic0a = []
         for _grouped in _idx_ic0a:
-            assert sum([len(_group) == 2 for _group in _grouped]) == len(_grouped)
+            for _group in _grouped:
+                assert len(_group) == 2, f"{_group}\nsize {len(_group)}"
             idx_ic0a += _grouped
 
         _d = {}
@@ -431,7 +432,7 @@ class Mfcc_Segment:
 
 if __name__ == "__main__":
     _args = get_mfcc_args()
-    _logger = set_logger(_args.log)
+    _logger = set_logger("SEGMENT", _args.log)
     segmenter = Mfcc_Segment(_args, _logger)
 
     path_list, _time_all, _frame_all = segmenter()
