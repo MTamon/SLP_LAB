@@ -412,8 +412,13 @@ class Mfcc_Segment:
         idx_ic0a = []
         for _grouped in _idx_ic0a:
             for _group in _grouped:
-                assert len(_group) == 2, f"{_group}\nsize {len(_group)}"
-            idx_ic0a += _grouped
+                assert len(_group) in [2, 1], f"{_group}\nsize {len(_group)}"
+            if len(_group) == 1:
+                assert (
+                    _group[0].split(".")[-1] == "wav"
+                ), f"Invalid file : {os.path.basename(_group[0])}"
+            else:
+                idx_ic0a += _grouped
 
         _d = {}
         for _r in idx_ic0a:
