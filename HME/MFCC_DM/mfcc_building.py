@@ -418,17 +418,14 @@ class Mfcc_Segment:
                         _group[0].split(".")[-1] == "wav"
                     ), f"Invalid file : {os.path.basename(_group[0])}"
                 else:
-                    idx_ic0a += _grouped
+                    idx_ic0a += [_group]
 
         _d = {}
         for _r in idx_ic0a:
             if _r[0].split(".")[-1] == "avidx":
                 _d[_r[0]] = _r[1]
             else:
-                try:
-                    _d[_r[1]] = _r[0]
-                except:
-                    raise IndexError(f"{idx_ic0a}\n{_r}")
+                _d[_r[1]] = _r[0]
 
         return _d
 
