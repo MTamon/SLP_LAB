@@ -139,6 +139,12 @@ def add_mfcc_args(parser: ArgumentParser) -> ArgumentParser:
         help="Excute process with single thread. Defaults to False.",
     )
     parser.add_argument(
+        "--redo",
+        default=False,
+        action="store_true",
+        help="Redo process.",
+    )
+    parser.add_argument(
         "--convert-path",
         default=None,
         type=int,

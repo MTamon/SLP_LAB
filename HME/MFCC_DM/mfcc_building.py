@@ -79,6 +79,7 @@ class Mfcc_Segment:
         self.single_proc = args.single_proc
 
         self.convert = args.convert_path
+        self.redo = args.redo
 
         if self.high_frequency * 2 > self.sample_frequency:
             raise ValueError(
@@ -137,7 +138,7 @@ class Mfcc_Segment:
     def __call__(self) -> Tuple[List[str], float, int]:
 
         idx_set = []
-        for i, (_avidx, _ic0a) in enumerate(self.idx_ic0a.items()):
+        for (_avidx, _ic0a) in self.idx_ic0a.items():
             avidx = load_index_file(_avidx)
             avidx["csv"] = self.convert_path(avidx["csv"])
             avidx["name"] = self.convert_path(avidx["name"])
@@ -161,7 +162,7 @@ class Mfcc_Segment:
                 else:
                     _ic0a = _wav_path
 
-                idx_set.append([i, avidx, _ic0a, pair, False])
+                idx_set.append([avidx, _ic0a, pair, False])
 
         if self.single_proc:
             batches = idx_set
@@ -194,13 +195,11 @@ class Mfcc_Segment:
 
         return (_results, time_all, frame_all)
 
-    def phase(
-        self, file_idx, avidx, _ic0a, pair, tqdm_visual=False
-    ) -> List[Tuple[str, tuple]]:
+    def phase(self, avidx, _ic0a, pair, tqdm_visual=False) -> List[Tuple[str, tuple]]:
         result = []
 
-        name = "_".join(os.path.basename(pair["sh"]).split("_")[:4])
-        name = " " * (17 - len(name)) + name + " "
+        f_name = "_".join(os.path.basename(pair["sh"]).split("_")[:4])
+        name = " " * (17 - len(f_name)) + f_name + " "
 
         wpath = pair["wav"]
         spkID = pair["spID"]
@@ -227,7 +226,7 @@ class Mfcc_Segment:
         video_size = math.ceil(fps * self.segment_size)
 
         _stride_rest = 0
-        segment_id = 0
+        # segment_id = 0
 
         segment = self.create_segment_dict(fps)
 
@@ -259,7 +258,17 @@ class Mfcc_Segment:
                         _stride_rest = nframe - 1
                         break
 
-                    term = np.array([start, start + nframe]) / fps
+                    _term = np.array([start, start + nframe])
+                    term = _term / fps
+
+                    _stride_rest = video_stride - 1
+
+                    _name = "_".join([f_name, str(_term[0]), str(_term[1])]) + ".seg"
+                    _segment_path = "/".join([self.seg_path, _name])
+                    if os.path.isfile(_segment_path) and not self.redo:
+                        segment = self.create_segment_dict(fps)
+                        result.append((_segment_path, None, _info))
+                        continue
 
                     segment["cent"] = np.stack(segment["cent"])
                     segment["angl"] = np.stack(segment["angl"])
@@ -270,18 +279,16 @@ class Mfcc_Segment:
 
                     assert segment["trgt"].shape == segment["othr"].shape
 
-                    _file_idx, _segment_id = str(file_idx), str(segment_id)
-                    _name = "_".join(["data", _file_idx, _segment_id]) + ".seg"
-                    _segment_path = "/".join([self.seg_path, _name])
+                    # _file_idx, _segment_id = str(file_idx), str(segment_id)
                     self.write_segment(segment, _segment_path)
-                    segment_id += 1
+                    # segment_id += 1
 
                     _info = {"time": term[1] - term[0], "frame": nframe}
                     result.append((_segment_path, None, _info))
 
                     segment = self.create_segment_dict(fps)
 
-                    _stride_rest = video_stride - 1
+                    # _stride_rest = video_stride - 1
                     break
 
                 centroid = shp_rec["centroid"]
