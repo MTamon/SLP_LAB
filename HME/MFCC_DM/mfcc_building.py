@@ -425,7 +425,10 @@ class Mfcc_Segment:
             if _r[0].split(".")[-1] == "avidx":
                 _d[_r[0]] = _r[1]
             else:
-                _d[_r[1]] = _r[0]
+                try:
+                    _d[_r[1]] = _r[0]
+                except:
+                    raise IndexError(f"{idx_ic0a}\n{_r}")
 
         return _d
 
