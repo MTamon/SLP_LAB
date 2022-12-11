@@ -259,12 +259,14 @@ class Mfcc_Segment:
             for nframe in range(video_size + 1):
                 current_idx = start + nframe
 
+                cond1 = nframe == video_size
+                cond2 = current_idx >= len(shp_dt)
+                cond3 = False
+                if not cond2:
+                    cond3 = shp_dt[current_idx]["ignore"]
+
                 # finish condition
-                if (
-                    shp_dt[current_idx]["ignore"]
-                    or nframe == video_size
-                    or current_idx >= len(shp_dt)
-                ):
+                if cond1 or cond2 or cond3:
                     if nframe - 1 < video_min_size:
                         segment = self.create_segment_dict(fps)
                         _stride_rest = nframe - 1
