@@ -327,7 +327,7 @@ class Mfcc_Segment:
             _waveform = np.frombuffer(_waveform, dtype=np.int16)
 
             segment_wav = _waveform[_start:_stop]
-            assert _stop < len(_waveform), "Over time: wave {0}, endTerm{1}".format(
+            assert _stop - 1 < len(_waveform), "Over time: wave {0}, endTerm{1}".format(
                 len(_waveform), _stop
             )
 
