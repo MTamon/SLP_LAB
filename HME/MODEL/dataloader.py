@@ -1,6 +1,7 @@
 """For Simple-Model Dataloader"""
 
-from typing import Any, List
+from __future__ import annotations
+from typing import Any, List, Dict
 from sklearn.utils import shuffle
 from numpy.typing import NDArray
 import numpy as np
@@ -13,7 +14,6 @@ class Dataloader:
         self,
         dataset: Dataset,
         batch_size: int,
-        valid_rate: float,
         truncate_excess: bool,
         do_shuffle: bool,
         *args,
@@ -23,13 +23,10 @@ class Dataloader:
         self.dataset = dataset
 
         self.batch_size = batch_size
-        self.valid_rate = valid_rate
         self.truncate_excess = truncate_excess
         self.do_shuffle = do_shuffle
 
-        _org_list = shuffle(np.array(self.dataset.data_list))
-        self.train_list = _org_list[: int(-len(_org_list) * self.valid_rate)]
-        self.valid_list = _org_list[int(-len(_org_list) * self.valid_list) :]
+        self.org_list = shuffle(np.array(self.dataset.data_list))
         self.table = []
 
         self._init_table()
@@ -55,9 +52,9 @@ class Dataloader:
 
     def _init_table(self):
         if self.do_shuffle:
-            _data_list = shuffle(self.train_list)
+            _data_list = shuffle(self.org_list)
         else:
-            _data_list = self.train_list
+            _data_list = self.org_list
 
         self.table = self.batching(_data_list)
         self._reset()
@@ -82,3 +79,30 @@ class Dataloader:
             batches = []
 
         return batches
+
+    def train_valid(self, valid_rate: float, **_) -> Dict[str, Dataloader]:
+        if not 0.0 < valid_rate < 1.0:
+            raise ValueError("'valid_rate' must be (0.0, 1.0).")
+
+        all_data = len(self.org_list)
+        train_list = self.org_list[: int(-all_data * valid_rate)]
+        valid_list = self.org_list[int(-all_data * valid_rate) :]
+
+        train_loader = self.copy()
+        valid_loader = self.copy()
+
+        train_loader.org_list = train_list
+        valid_loader.org_list = valid_list
+
+        return {"train": train_loader, "valid": valid_loader}
+
+    def copy(self) -> Dataloader:
+        _copy = Dataloader(
+            dataset=self.dataset,
+            batch_size=self.batch_size,
+            truncate_excess=self.truncate_excess,
+            do_shuffle=self.do_shuffle,
+            *self.args,
+            **self.kwargs,
+        )
+        return _copy
