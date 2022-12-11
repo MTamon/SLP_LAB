@@ -287,17 +287,18 @@ class Mfcc_Segment:
 
                     segment["cent"] = np.stack(segment["cent"])
                     segment["angl"] = np.stack(segment["angl"])
-                    segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
-                    segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
+                    segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID, fps)
+                    segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID, fps)
                     segment["ffps"] = len(segment["trgt"]) / (term[1] - term[0])
                     segment["term"] = term - term[0]
 
-                    assert segment["trgt"].shape == segment["othr"].shape
+                    if segment["trgt"] is not None and segment["othr"] is not None:
+                        assert segment["trgt"].shape == segment["othr"].shape
 
-                    result.append((_segment_path, None, _info))
+                        result.append((_segment_path, None, _info))
 
-                    self.write_segment(segment, _segment_path)
-                    segment = self.create_segment_dict(fps)
+                        self.write_segment(segment, _segment_path)
+                        segment = self.create_segment_dict(fps)
                     break
 
                 centroid = shp_dt[current_idx]["centroid"]
@@ -327,11 +328,11 @@ class Mfcc_Segment:
             _waveform = np.frombuffer(_waveform, dtype=np.int16)
 
             segment_wav = _waveform[_start:_stop]
-            assert (
-                _stop - 1 < _num_samples
-            ), "Over time: wave {0}, endTerm{1} ({2}) {3}".format(
-                len(_waveform), _stop, os.path.basename(wav_path), stop
-            )
+            if len(segment_wav) < _stop - _start:
+                dif = (_stop - _num_samples) / self.sample_frequency
+                if not (stop - start - dif >= self.segment_min_size):
+                    return None
+                _stop = _num_samples
 
             mask = self.generate_mask(
                 len(segment_wav), start, stop, spID, wav_path, csv_dt
