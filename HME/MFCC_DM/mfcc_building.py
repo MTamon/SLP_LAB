@@ -78,7 +78,8 @@ class Mfcc_Segment:
         self.point_size = int(self.sample_frequency * self.frame_length * 0.001)
         self.point_shift = int(self.sample_frequency * self.frame_shift * 0.001)
         self.feature_width_min = (
-            int(self.segment_min_size * self.sample_frequency) // self.point_shift
+            int(self.segment_min_size * self.sample_frequency - self.point_size)
+            // self.point_shift
         )
 
         self.proc_num = args.proc_num
