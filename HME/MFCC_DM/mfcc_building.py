@@ -285,14 +285,17 @@ class Mfcc_Segment:
                         result.append((_segment_path, None, _info))
                         break
 
-                    segment["cent"] = np.stack(segment["cent"])
-                    segment["angl"] = np.stack(segment["angl"])
-                    segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
-                    segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
-                    segment["ffps"] = len(segment["trgt"]) / (term[1] - term[0])
-                    segment["term"] = term - term[0]
+                    trgt = self.get_feature(wpath, *term, csv_dt, spkID)
+                    othr = self.get_feature(_ic0a, *term, csv_dt, spkID)
 
-                    if segment["trgt"] is not None and segment["othr"] is not None:
+                    if trgt is not None and othr is not None:
+                        segment["cent"] = np.stack(segment["cent"])
+                        segment["angl"] = np.stack(segment["angl"])
+                        segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
+                        segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
+                        segment["ffps"] = len(segment["trgt"]) / (term[1] - term[0])
+                        segment["term"] = term - term[0]
+
                         assert segment["trgt"].shape == segment["othr"].shape
 
                         result.append((_segment_path, None, _info))
