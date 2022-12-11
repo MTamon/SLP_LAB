@@ -301,6 +301,9 @@ class Mfcc_Segment:
         return result
 
     def get_feature(self, wav_path, start, stop, csv_dt, spID) -> np.ndarray:
+        assert (
+            stop - start > self.segment_min_size
+        ), f"term {start} - {stop} (min {self.segment_min_size})"
 
         _start = int(self.sample_frequency * start)
         _stop = int(self.sample_frequency * stop)
