@@ -287,8 +287,8 @@ class Mfcc_Segment:
 
                     segment["cent"] = np.stack(segment["cent"])
                     segment["angl"] = np.stack(segment["angl"])
-                    segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID, fps)
-                    segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID, fps)
+                    segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
+                    segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
                     segment["ffps"] = len(segment["trgt"]) / (term[1] - term[0])
                     segment["term"] = term - term[0]
 
