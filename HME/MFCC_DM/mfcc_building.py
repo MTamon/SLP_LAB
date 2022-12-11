@@ -329,8 +329,8 @@ class Mfcc_Segment:
             segment_wav = _waveform[_start:_stop]
             assert (
                 _stop - 1 < _num_samples
-            ), "Over time: wave {0}, endTerm{1} ({2})".format(
-                len(_waveform), _stop, os.path.basename(wav_path)
+            ), "Over time: wave {0}, endTerm{1} ({2}) {3}".format(
+                len(_waveform), _stop, os.path.basename(wav_path), stop
             )
 
             mask = self.generate_mask(
