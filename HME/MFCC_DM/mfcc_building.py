@@ -327,8 +327,10 @@ class Mfcc_Segment:
             _waveform = np.frombuffer(_waveform, dtype=np.int16)
 
             segment_wav = _waveform[_start:_stop]
-            assert _stop - 1 < len(_waveform), "Over time: wave {0}, endTerm{1}".format(
-                len(_waveform), _stop
+            assert (
+                _stop - 1 < _num_samples
+            ), "Over time: wave {0}, endTerm{1} ({2})".format(
+                len(_waveform), _stop, os.path.basename(wav_path)
             )
 
             mask = self.generate_mask(
