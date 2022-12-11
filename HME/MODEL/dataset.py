@@ -18,6 +18,9 @@ class Dataset(metaclass=ABCMeta):
     def __len__(self):
         return len(self.data_list)
 
+    def __iter__(self):
+        return self
+
     def __next__(self):
         if self.current_idx >= len(self.data_list):
             self._reset()

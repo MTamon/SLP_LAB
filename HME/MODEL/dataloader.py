@@ -27,19 +27,23 @@ class Dataloader:
         self.do_shuffle = do_shuffle
 
         self.org_list = shuffle(np.array(self.dataset.data_list))
+        self.idx_list = np.arange(len(dataset))
         self.table = []
 
-        self._init_table()
+        self.reset()
 
         self.args = args
         self.kwargs = kwargs
 
+    def __iter__(self):
+        return self
+
     def __next__(self):
         if self.current_idx >= len(self.table):
-            self._init_table()
+            self.reset()
             return StopIteration
 
-        batch = self.table[self.current_idx]
+        batch = self.collect_batch(self.table[self.current_idx])
         self.current_idx += 1
 
         return batch
@@ -47,17 +51,17 @@ class Dataloader:
     def __len__(self):
         return len(self.table)
 
-    def _reset(self):
+    def reset(self):
+        self._init_table()
         self.current_idx = 0
 
     def _init_table(self):
         if self.do_shuffle:
-            _data_list = shuffle(self.org_list)
+            _data_list = shuffle(self.idx_list)
         else:
-            _data_list = self.org_list
+            _data_list = self.idx_list
 
         self.table = self.batching(_data_list)
-        self._reset()
 
     def batching(self, data_list: NDArray[Any]) -> List[NDArray[Any]]:
         batches = [[]]
@@ -80,21 +84,33 @@ class Dataloader:
 
         return batches
 
+    def collect_batch(self, batch_idx: List[int]) -> List[Any]:
+        _batch = []
+        for _idx in batch_idx:
+            _batch.append(self.dataset[_idx])
+
+        return _batch
+
     def train_valid(self, valid_rate: float, **_) -> Dict[str, Dataloader]:
         if not 0.0 < valid_rate < 1.0:
             raise ValueError("'valid_rate' must be (0.0, 1.0).")
 
-        all_data = len(self.org_list)
-        train_list = self.org_list[: int(-all_data * valid_rate)]
-        valid_list = self.org_list[int(-all_data * valid_rate) :]
+        if self.do_shuffle:
+            _idx_list = shuffle(self.idx_list)
+        else:
+            _idx_list = self.idx_list
+
+        all_data = len(self.dataset)
+        train_list = _idx_list[: int(-all_data * valid_rate)]
+        valid_list = _idx_list[int(-all_data * valid_rate) :]
 
         train_loader = self.copy()
         valid_loader = self.copy()
 
-        train_loader.org_list = train_list
-        valid_loader.org_list = valid_list
+        train_loader.idx_list = train_list
+        valid_loader.idx_list = valid_list
 
-        return {"train": train_loader, "valid": valid_loader}
+        return {"train": train_loader.reset(), "valid": valid_loader.reset()}
 
     def copy(self) -> Dataloader:
         _copy = Dataloader(

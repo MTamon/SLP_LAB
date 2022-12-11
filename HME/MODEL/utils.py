@@ -64,6 +64,18 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         type=int,
         help="Epoch num.",
     )
+    parser.add_argument(
+        "--model-save-path",
+        default="model/model.pth",
+        type=str,
+        help="Path for model saved site.",
+    )
+    parser.add_argument(
+        "--save-per-epoch",
+        default=False,
+        action="store_true",
+        help="Save model per epoch.",
+    )
 
     return parser
 
