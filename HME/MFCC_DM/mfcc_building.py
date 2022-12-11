@@ -467,12 +467,6 @@ class Mfcc_Segment:
 
         return path
 
-    # def check_exist_result(self):
-    #     files = os.listdir(self.output)
-    #     for file in files:
-    #         fterm = re.split(r"[_.]", file)[-3:-1]
-    #         if int(fterm[1]) - int(fterm[0]) <
-
     def write_segment(self, segment, path):
         # output by pickle
         with open(path, "wb") as f:
