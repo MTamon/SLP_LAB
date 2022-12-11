@@ -1,8 +1,8 @@
 """For Simple-Model Dataloader"""
 
 from argparse import Namespace
-from sklearn.utils import shuffle
 from typing import Any, List
+from sklearn.utils import shuffle
 from numpy.typing import NDArray
 import numpy as np
 
