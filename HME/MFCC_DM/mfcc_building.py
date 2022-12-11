@@ -232,7 +232,6 @@ class Mfcc_Segment:
         video_size = math.ceil(fps * self.segment_size)
 
         _stride_rest = 0
-        # segment_id = 0
 
         segment = self.create_segment_dict(fps)
 
