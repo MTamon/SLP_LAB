@@ -41,6 +41,18 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         help="Learning batch size.",
     )
     parser.add_argument(
+        "--truncate-excess",
+        default=False,
+        action="store_true",
+        help="Truncation of batch separate excess.",
+    )
+    parser.add_argument(
+        "--shuffle",
+        default=False,
+        action="store_true",
+        help="Shuffle dataset table.",
+    )
+    parser.add_argument(
         "--epoch",
         default=20,
         type=int,
