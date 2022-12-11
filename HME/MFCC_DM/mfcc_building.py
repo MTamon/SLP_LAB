@@ -75,6 +75,12 @@ class Mfcc_Segment:
         self.high_frequency = args.high_frequency
         self.dither = args.dither
 
+        self.point_size = int(self.sample_frequency * self.frame_length * 0.001)
+        self.point_shift = int(self.sample_frequency * self.frame_shift * 0.001)
+        self.feature_width_min = (
+            int(self.segment_min_size * self.sample_frequency) // self.point_shift
+        )
+
         self.proc_num = args.proc_num
         self.single_proc = args.single_proc
 
@@ -336,9 +342,11 @@ class Mfcc_Segment:
     def generate_mask(
         self, num_samples, start, stop, spID, wav_path, csv_dt
     ) -> np.ndarray:
-        frame_size = int(self.sample_frequency * self.frame_length * 0.001)
-        frame_shift = int(self.sample_frequency * self.frame_shift * 0.001)
-        flength = (num_samples - frame_size) // frame_shift + 1
+
+        flength = (num_samples - self.point_size) // self.point_shift + 1
+        assert (
+            flength > self.feature_width_min
+        ), f"flength {flength}, feature-width {self.feature_width_min}"
 
         mask = np.zeros(flength)
         ffps = flength / (stop - start)
