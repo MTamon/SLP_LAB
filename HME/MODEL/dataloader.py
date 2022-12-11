@@ -1,6 +1,5 @@
 """For Simple-Model Dataloader"""
 
-from argparse import Namespace
 from typing import Any, List
 from sklearn.utils import shuffle
 from numpy.typing import NDArray
@@ -10,20 +9,33 @@ from dataset import Dataset
 
 
 class Dataloader:
-    def __init__(self, argparse: Namespace, dataset: Dataset) -> None:
+    def __init__(
+        self,
+        dataset: Dataset,
+        batch_size: int,
+        valid_rate: float,
+        truncate_excess: bool,
+        do_shuffle: bool,
+        *args,
+        **kwargs,
+    ) -> None:
         self.current_idx = 0
-
-        self.argparse = argparse
         self.dataset = dataset
 
-        self.batch_size = argparse.batch_size
-        self.truncate_excess = argparse.truncate_excess
-        self.shuffle = argparse.shuffle
+        self.batch_size = batch_size
+        self.valid_rate = valid_rate
+        self.truncate_excess = truncate_excess
+        self.do_shuffle = do_shuffle
 
-        self.original_list = np.array(self.dataset.data_list)
+        _org_list = shuffle(np.array(self.dataset.data_list))
+        self.train_list = _org_list[: int(-len(_org_list) * self.valid_rate)]
+        self.valid_list = _org_list[int(-len(_org_list) * self.valid_list) :]
         self.table = []
 
         self._init_table()
+
+        self.args = args
+        self.kwargs = kwargs
 
     def __next__(self):
         if self.current_idx >= len(self.table):
@@ -42,10 +54,10 @@ class Dataloader:
         self.current_idx = 0
 
     def _init_table(self):
-        if self.shuffle:
-            _data_list = shuffle(self.original_list)
+        if self.do_shuffle:
+            _data_list = shuffle(self.train_list)
         else:
-            _data_list = self.original_list
+            _data_list = self.train_list
 
         self.table = self.batching(_data_list)
         self._reset()

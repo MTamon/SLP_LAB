@@ -41,6 +41,12 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         help="Learning batch size.",
     )
     parser.add_argument(
+        "--valid-rate",
+        default=0.3,
+        type=float,
+        help="Valid data rate in data divide.",
+    )
+    parser.add_argument(
         "--truncate-excess",
         default=False,
         action="store_true",
