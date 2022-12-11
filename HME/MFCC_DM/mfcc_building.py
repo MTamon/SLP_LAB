@@ -265,7 +265,7 @@ class Mfcc_Segment:
                     or nframe == video_size
                     or current_idx >= len(shp_dt)
                 ):
-                    if nframe < video_min_size:
+                    if nframe - 1 < video_min_size:
                         segment = self.create_segment_dict(fps)
                         _stride_rest = nframe - 1
                         break
