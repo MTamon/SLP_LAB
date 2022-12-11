@@ -257,14 +257,20 @@ class Mfcc_Segment:
                 continue
 
             for nframe in range(video_size + 1):
+                current_idx = start + nframe
+
                 # finish condition
-                if shp_rec["ignore"] or nframe == video_size:
+                if (
+                    shp_dt[current_idx]["ignore"]
+                    or nframe == video_size
+                    or current_idx >= len(shp_dt)
+                ):
                     if nframe < video_min_size:
                         segment = self.create_segment_dict(fps)
                         _stride_rest = nframe - 1
                         break
 
-                    _term = np.array([start, start + nframe])
+                    _term = np.array([start, current_idx - 1])
                     term = _term / fps
 
                     _stride_rest = video_stride - 1
@@ -292,8 +298,8 @@ class Mfcc_Segment:
                     segment = self.create_segment_dict(fps)
                     break
 
-                centroid = shp_rec["centroid"]
-                euler = tools.rotation_angles(shp_rec["rotate"].T)
+                centroid = shp_dt[current_idx]["centroid"]
+                euler = tools.rotation_angles(shp_dt[current_idx]["rotate"].T)
 
                 segment["cent"].append(centroid)
                 segment["angl"].append(euler)
@@ -308,8 +314,6 @@ class Mfcc_Segment:
         _start = int(self.sample_frequency * start)
         _stop = int(self.sample_frequency * stop)
 
-        # name = os.path.basename(wav_path)
-
         np.random.seed(seed=0)
 
         with wave.open(wav_path, mode="r") as wav:
@@ -321,6 +325,9 @@ class Mfcc_Segment:
             _waveform = np.frombuffer(_waveform, dtype=np.int16)
 
             segment_wav = _waveform[_start:_stop]
+            assert _stop < len(_waveform), "Over time: wave {0}, endTerm{1}".format(
+                len(_waveform), _stop
+            )
 
             mask = self.generate_mask(
                 len(segment_wav), start, stop, spID, wav_path, csv_dt
@@ -459,6 +466,12 @@ class Mfcc_Segment:
         path = "/".join(_target) + "/" + "/".join(r_path)
 
         return path
+
+    # def check_exist_result(self):
+    #     files = os.listdir(self.output)
+    #     for file in files:
+    #         fterm = re.split(r"[_.]", file)[-3:-1]
+    #         if int(fterm[1]) - int(fterm[0]) <
 
     def write_segment(self, segment, path):
         # output by pickle
