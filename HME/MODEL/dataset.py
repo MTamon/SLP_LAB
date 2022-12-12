@@ -6,9 +6,11 @@ import re
 
 
 class Dataset(metaclass=ABCMeta):
-    def __init__(self, datasite):
+    def __init__(self, datasite, *args, **kwargs):
 
         self.datasite = datasite
+        self.args = args
+        self.kwargs = kwargs
 
         self.data_list = os.listdir(self.datasite)
         self.current_idx = 0

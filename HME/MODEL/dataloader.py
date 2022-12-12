@@ -41,7 +41,7 @@ class Dataloader:
     def __next__(self):
         if self.current_idx >= len(self.table):
             self.reset()
-            return StopIteration
+            raise StopIteration
 
         batch = self.collect_batch(self.table[self.current_idx])
         self.current_idx += 1
@@ -51,9 +51,11 @@ class Dataloader:
     def __len__(self):
         return len(self.table)
 
-    def reset(self):
+    def reset(self) -> Dataloader:
         self._init_table()
         self.current_idx = 0
+
+        return self
 
     def _init_table(self):
         if self.do_shuffle:
