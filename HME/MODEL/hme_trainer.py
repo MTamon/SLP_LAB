@@ -76,7 +76,7 @@ class HmeTrainer(Trainer):
                 pred_cent = pred_cent[:, 1:, :]
 
             print(pred_angl)
-            print(src_angl)
+            print(src_cent)
 
             pred_angl *= mask_a
             trg_angl *= mask_a
