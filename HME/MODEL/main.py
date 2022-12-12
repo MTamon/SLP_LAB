@@ -18,9 +18,11 @@ logger = set_logger("TRAIN", args.log)
 torch.backends.cudnn.benchmark = True
 scaler = torch.cuda.amp.GradScaler()
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 dataset = HmeDataset(**vars(args))
 dataloader = HmeDataloader(dataset, **vars(args))
-model = SimpleModel(**vars(args))
+model = SimpleModel(**vars(args), device=device)
 
 optimizer = AdamW(
     params=model.parameters(),

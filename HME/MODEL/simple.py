@@ -16,6 +16,7 @@ class SimpleModel(nn.Module):
         ac_feature_size: int,
         ac_feature_width: int,
         num_layer: int,
+        device: torch.device = None,
         *args,
         **kwargs
     ):
@@ -31,6 +32,8 @@ class SimpleModel(nn.Module):
         self.ac_feature_size = ac_feature_size
         self.ac_feature_width = ac_feature_width
         self.num_layer = num_layer
+
+        self.device = "cpu" if device is None else device
 
         self.input_ac_size = ac_feature_size * ac_feature_width
 
@@ -80,9 +83,13 @@ class SimpleModel(nn.Module):
         """
         batch_size = input_tensor[0].shape[0]
         if c_0 is None:
-            c_0 = torch.zeros((self.num_layer, batch_size, self.lstm_dim))
+            c_0 = torch.zeros(
+                (self.num_layer, batch_size, self.lstm_dim), device=self.device
+            )
         if h_0 is None:
-            h_0 = torch.zeros((self.num_layer, batch_size, self.lstm_dim))
+            h_0 = torch.zeros(
+                (self.num_layer, batch_size, self.lstm_dim), device=self.device
+            )
 
         angl = input_tensor[0]
         cent = input_tensor[1]

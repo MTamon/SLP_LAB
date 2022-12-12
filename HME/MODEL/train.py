@@ -42,7 +42,7 @@ class Trainer(metaclass=ABCMeta):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         net.to(device=self.device)
-        self._logging(f"Device :{self.device}")
+        self._logging(f"Device : {self.device}")
         self.reset()
 
     def __call__(self) -> Dict[str, Dict[str, List[float]]]:
