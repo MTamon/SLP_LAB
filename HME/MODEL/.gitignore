@@ -129,9 +129,9 @@ dmypy.json
 .pyre/
 
 # log data
-log/**
-model/**
-transition/**
+log/**log**
+model/**.pth
+transition/**.csv
 
 # Vscode launch file
 .vscode
