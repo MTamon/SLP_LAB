@@ -307,6 +307,8 @@ class Mfcc_Segment:
                 centroid = shp_dt[current_idx]["centroid"]
                 euler = tools.rotation_angles(shp_dt[current_idx]["rotate"].T)
 
+                assert max(abs(max(euler)), abs(min(euler))) <= 90.0
+
                 segment["cent"].append(centroid)
                 segment["angl"].append(euler)
 

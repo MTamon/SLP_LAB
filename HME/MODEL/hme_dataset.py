@@ -34,8 +34,8 @@ class HmeDataset(Dataset):
         vfps = segment["vfps"]
         ffps = segment["ffps"]
 
-        cent = torch.tensor(segment["angl"], device=self.device)
-        angl = torch.tensor(segment["cent"], device=self.device)
+        angl = torch.tensor(segment["angl"], device=self.device)
+        cent = torch.tensor(segment["cent"], device=self.device)
         trgt = []
         othr = []
 

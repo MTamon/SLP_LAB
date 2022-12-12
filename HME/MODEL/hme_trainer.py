@@ -105,11 +105,13 @@ class HmeTrainer(Trainer):
 
     def padding(self, data: List[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         packed = pack_sequence(data, enforce_sorted=False)
-        batch, _ = pad_packed_sequence(packed, batch_first=True, padding_value=1234)
-        mask = batch != 1234
+        batch, _ = pad_packed_sequence(packed, batch_first=True, padding_value=1e5)
+        mask = batch != 1e5
         mask = mask.int()
 
         batch = batch.float().to(self.device)
         mask = mask.float().to(self.device)
+
+        batch *= mask
 
         return (batch, mask)
