@@ -70,8 +70,8 @@ for current_epoch in range(args.epoch):
                     with open(valid_fpath, mode="a", encoding="utf-8") as f:
                         f.write(f"{loss},{acc}\n")
 
-                _loss = round(float(loss), 2)
-                _acc = round(float(acc), 2)
+                _loss = round(float(loss.to("cpu")), 2)
+                _acc = round(float(acc.to("cpu")), 2)
                 prog.postfix = f"L:{_loss}, A:{_acc}"
 
     epo_inf = f"0{current_epoch}" if current_epoch < 10 else str(current_epoch)

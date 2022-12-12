@@ -49,16 +49,6 @@ class HmeTrainer(Trainer):
         trg_angl, _ = self.padding(batch["target"]["angl"])
         trg_cent, _ = self.padding(batch["target"]["cent"])
 
-        assert torch.sum(torch.eq(mask_a, mask_c)) == mask_a.nelement()
-        assert (
-            src_angl.shape[1]
-            == src_cent.shape[1]
-            == src_trgt.shape[1]
-            == src_othr.shape[1]
-            == trg_angl.shape[1]
-            == trg_cent.shape[1]
-        ), "All sequence length must be same length."
-
         with torch.cuda.amp.autocast():
             if self.mode == "train":
                 model_input = [src_angl, src_cent, src_trgt, src_othr]
