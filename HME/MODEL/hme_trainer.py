@@ -94,13 +94,13 @@ class HmeTrainer(Trainer):
     def learn(self, loss: torch.Tensor):
         if self.mode == "valid":
             return
-        if self.scaler is None:
-            loss.backward()
-            self.optimizer.step()
-        else:
-            self.scaler.scale(loss).backward()
-            self.scaler.step(self.optimizer)
-            self.scaler.update()
+        # if self.scaler is None:
+        loss.backward()
+        self.optimizer.step()
+        # else:
+        #     self.scaler.scale(loss).backward()
+        #     self.scaler.step(self.optimizer)
+        #     self.scaler.update()
 
     def padding(self, data: List[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         packed = pack_sequence(data, enforce_sorted=False)
