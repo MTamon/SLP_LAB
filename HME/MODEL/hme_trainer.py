@@ -94,6 +94,9 @@ class HmeTrainer(Trainer):
     def learn(self, loss: torch.Tensor):
         if self.mode == "valid":
             return
+
+        self.optimizer.zero_grad()
+
         if self.scaler is None:
             loss.backward()
             self.optimizer.step()
