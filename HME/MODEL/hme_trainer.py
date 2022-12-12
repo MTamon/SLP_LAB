@@ -119,4 +119,7 @@ class HmeTrainer(Trainer):
         mask = batch != 1e5
         mask = mask.int()
 
-        return (batch.float(), mask.float())
+        batch = batch.float().to(self.device)
+        mask = mask.float().to(self.device)
+
+        return (batch, mask)
