@@ -22,8 +22,7 @@ class HmeDataset(Dataset):
         self.ac_feature_size = ac_feature_size
         self.ac_feature_width = ac_feature_width
 
-        self._device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def _get_data(
         self, file_name: str
@@ -35,8 +34,8 @@ class HmeDataset(Dataset):
         vfps = segment["vfps"]
         ffps = segment["ffps"]
 
-        cent = torch.Tensor(segment["angl"], device=self.device)
-        angl = torch.Tensor(segment["cent"], device=self.device)
+        cent = torch.tensor(segment["angl"], device=self.device)
+        angl = torch.tensor(segment["cent"], device=self.device)
         trgt = []
         othr = []
 
@@ -57,8 +56,8 @@ class HmeDataset(Dataset):
             trgt.append(trgt_window)
             othr.append(othr_window)
 
-        trgt = torch.Tensor(np.stack(trgt), device=self.device)
-        othr = torch.Tensor(np.stack(othr), device=self.device)
+        trgt = torch.tensor(np.stack(trgt), device=self.device)
+        othr = torch.tensor(np.stack(othr), device=self.device)
 
         ans_cent = cent[1:].clone()
         cent = cent[:-1]

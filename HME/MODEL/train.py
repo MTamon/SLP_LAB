@@ -39,8 +39,7 @@ class Trainer(metaclass=ABCMeta):
 
         self.train_valid_loader = self.dataloader.train_valid(valid_rate)
         self.mode = "train"
-        self._device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         net.to(device=self.device)
         self._logging(f"Device :{self.device}")
@@ -101,7 +100,9 @@ class Trainer(metaclass=ABCMeta):
             torch.save(self.net.state_dict(), path)
 
     @staticmethod
-    def load_model(model: nn.Module, path: str, device: str = None) -> nn.Module:
+    def load_model(
+        model: nn.Module, path: str, device: torch.device = None
+    ) -> nn.Module:
         net_dic = torch.load(path, map_location=device)
         model.load_state_dict(net_dic)
 
