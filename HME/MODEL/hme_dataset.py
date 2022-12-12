@@ -22,7 +22,8 @@ class HmeDataset(Dataset):
         self.ac_feature_size = ac_feature_size
         self.ac_feature_width = ac_feature_width
 
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self._device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def _get_data(
         self, file_name: str
