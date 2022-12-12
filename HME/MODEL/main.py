@@ -56,6 +56,7 @@ v_f.close()
 for current_epoch in range(args.epoch):
     epoch_loss = []
     epoch_acc = []
+    logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)
 
     for mode in ["train", "valid"]:
         trainer.set_mode(mode)
