@@ -1,7 +1,8 @@
 python main.py \
 --datasite ../data/test/segments/data \
 --log log/train.log \
---transition-path transition/train.csv \
+--train-result-path transition/train.csv \
+--valid-result-path transition/valid.csv \
 --ac-feature-size 80 \
 --ac-feature-width 32 \
 --lstm-dim 16 \

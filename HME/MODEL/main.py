@@ -39,13 +39,16 @@ trainer = HmeTrainer(
     **vars(args),
 )
 
+train_length = len(trainer.train_valid_loader["train"])
+valid_length = len(trainer.train_valid_loader["valid"])
+
 train_fpath = add_datetime_path(args.train_result_path)
 valid_fpath = add_datetime_path(args.valid_result_path)
 t_f = open(train_fpath, mode="w", encoding="utf-8")
-t_f.write("loss, acc\n")
+t_f.write(f"loss, acc, {train_length}\n")
 t_f.close()
 v_f = open(valid_fpath, mode="w", encoding="utf-8")
-v_f.write("loss, acc\n")
+v_f.write(f"loss, acc, {valid_length}\n")
 v_f.close()
 
 for current_epoch in range(args.epoch):
