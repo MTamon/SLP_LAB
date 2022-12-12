@@ -73,3 +73,7 @@ for current_epoch in range(args.epoch):
                 _loss = round(float(loss), 2)
                 _acc = round(float(acc), 2)
                 prog.postfix = f"L:{_loss}, A:{_acc}"
+
+    epo_inf = f"0{current_epoch}" if current_epoch < 10 else str(current_epoch)
+    path = ".".join(args.model_save_path.split(".")[:-1]) + f"E{epo_inf}.pth"
+    trainer.save_model(path)

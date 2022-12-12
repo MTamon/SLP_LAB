@@ -16,7 +16,6 @@ python main.py \
 --do-shuffle \
 --epoch 20 \
 --model-save-path model/_model.pth \
---save-per-epoch \
 --lr 1e-4 \
 --beta1 0.9 \
 --beta2 0.98 \

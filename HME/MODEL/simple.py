@@ -16,8 +16,8 @@ class SimpleModel(nn.Module):
         ac_feature_size: int,
         ac_feature_width: int,
         num_layer: int,
-        device: torch.device = None,
         *args,
+        device: torch.device = None,
         **kwargs
     ):
         super(SimpleModel, self).__init__()
