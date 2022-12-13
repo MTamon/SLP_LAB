@@ -88,6 +88,12 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         help="Number of dimensions of Relu layer [dim]",
     )
     parser.add_argument(
+        "--dropout-rate",
+        default=0.5,
+        type=float,
+        help="Dropout rate of ReluUsed [dim]",
+    )
+    parser.add_argument(
         "--batch-size",
         default=32,
         type=int,
@@ -158,6 +164,12 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         default=1e-2,
         type=float,
         help="weight decay coefficient of AdamW",
+    )
+    parser.add_argument(
+        "--use-model",
+        default="simple",
+        type=str,
+        help="Use model.",
     )
 
     return parser

@@ -11,6 +11,7 @@ from hme_dataset import HmeDataset
 from hme_dataloader import HmeDataloader
 from hme_trainer import HmeTrainer
 from simple import SimpleModel
+from relu_used import ReluUsed
 
 SEED = 42
 fix_seed(SEED)
@@ -25,7 +26,12 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 dataset = HmeDataset(**vars(args))
 dataloader = HmeDataloader(dataset, **vars(args))
-model = SimpleModel(**vars(args), device=device)
+if args.use_model == "simple":
+    model = SimpleModel(**vars(args), device=device)
+elif args.use_model == "relu-used":
+    model = ReluUsed(**vars(args), device=device)
+else:
+    raise ValueError(f"Invalid argment {args.use_model}")
 
 optimizer = AdamW(
     params=model.parameters(),
@@ -86,7 +92,7 @@ def process(_mode):
 
 logger.info(" Init Valid-Mode >>> ")
 _loss, _acc = process("valid")
-logger.info(" Result |[ Loss : %s, Acc : %s ]|", _loss, _acc)
+logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
 
 for current_epoch in range(args.epoch):
     logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)
