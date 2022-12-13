@@ -47,19 +47,19 @@ class SimpleModel(nn.Module):
 
         img_size = 3 * 244 * 244
 
-        self.link_vgg_trgt = nn.Linear(self.input_ac_size, img_size)
-        self.link_vgg_othr = nn.Linear(self.input_ac_size, img_size)
+        self.link_vgg_trgt = nn.Linear(self.input_ac_size, img_size).to(self.device)
+        self.link_vgg_othr = nn.Linear(self.input_ac_size, img_size).to(self.device)
         self.extractor_trgt = create_feature_extractor(net_t, {"avgpool": "feature"})
         self.extractor_othr = create_feature_extractor(net_o, {"avgpool": "feature"})
 
-        self.link_fc_trgt = nn.Linear(25088, ac_linear_dim)
-        self.link_fc_othr = nn.Linear(25088, ac_linear_dim)
-        self.cent_fc = nn.Linear(3, pos_feature_size)
-        self.angl_fc = nn.Linear(3, pos_feature_size)
+        self.link_fc_trgt = nn.Linear(25088, ac_linear_dim).to(self.device)
+        self.link_fc_othr = nn.Linear(25088, ac_linear_dim).to(self.device)
+        self.cent_fc = nn.Linear(3, pos_feature_size).to(self.device)
+        self.angl_fc = nn.Linear(3, pos_feature_size).to(self.device)
 
         self.cat_dim = pos_feature_size * 2 + ac_linear_dim * 2
 
-        self.forward_lstm = nn.Linear(self.cat_dim, self.lstm_input_dim)
+        self.forward_lstm = nn.Linear(self.cat_dim, self.lstm_input_dim).to(self.device)
 
         self.lstm = nn.LSTM(
             input_size=self.lstm_input_dim,
@@ -67,15 +67,15 @@ class SimpleModel(nn.Module):
             batch_first=True,
             num_layers=num_layer,
             bidirectional=False,
-        )
+        ).to(self.device)
 
-        self.backward_lstm = nn.Linear(lstm_dim, self.lstm_output_dim)
+        self.backward_lstm = nn.Linear(lstm_dim, self.lstm_output_dim).to(self.device)
 
-        self.angl_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim)
-        self.cent_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim)
+        self.angl_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
+        self.cent_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
 
-        self.angl_linear2 = nn.Linear(lstm_output_dim, 3)
-        self.cent_linear2 = nn.Linear(lstm_output_dim, 3)
+        self.angl_linear2 = nn.Linear(lstm_output_dim, 3).to(self.device)
+        self.cent_linear2 = nn.Linear(lstm_output_dim, 3).to(self.device)
 
     def transfer_learning(self, net: nn.Module):
         for param in net.parameters():
