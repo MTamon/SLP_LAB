@@ -46,17 +46,17 @@ class SimpleModel(nn.Module):
 
         self.cat_dim = pos_feature_size * 2 + ac_linear_dim * 2
 
-        self.forward_lstm = nn.Linear(self.cat_dim, self.lstm_input_dim).to(self.device)
+        self.link_lstm_forward = nn.Linear(self.cat_dim, lstm_input_dim).to(self.device)
 
         self.lstm = nn.LSTM(
-            input_size=self.lstm_input_dim,
+            input_size=lstm_input_dim,
             hidden_size=lstm_dim,
             batch_first=True,
             num_layers=num_layer,
             bidirectional=False,
         ).to(self.device)
 
-        self.backward_lstm = nn.Linear(lstm_dim, self.lstm_output_dim).to(self.device)
+        self.link_lstm_back = nn.Linear(lstm_dim, self.lstm_output_dim).to(self.device)
 
         self.angl_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
         self.cent_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
@@ -93,6 +93,17 @@ class SimpleModel(nn.Module):
                 (self.num_layer, batch_size, self.lstm_dim), device=self.device
             )
 
+        input_lstm = self.forward_lstm(input_tensor)
+
+        hn, (h, c) = self.lstm(input_lstm, (h_0, c_0))
+
+        back = self.backward_lstm(hn)
+
+        _angl, _cent = self.output_cent_angl(back)
+
+        return ((_angl, _cent), (h, c))
+
+    def forward_lstm(self, input_tensor: torch.Tensor):
         angl = input_tensor[0]
         cent = input_tensor[1]
         ac_ft_trgt = input_tensor[2]
@@ -106,16 +117,20 @@ class SimpleModel(nn.Module):
 
         input_lstm = torch.cat([angl, cent, _ac_ft_trgt, _ac_ft_othr], axis=-1)
 
-        input_lstm = self.forward_lstm(input_lstm)
+        input_lstm = self.link_lstm_forward(input_lstm)
 
-        hn, (h, c) = self.lstm(input_lstm, (h_0, c_0))
+        return input_lstm
 
-        hn = self.backward_lstm(hn)
+    def backward_lstm(self, hn: torch.Tensor):
+        hn = self.link_lstm_back(hn)
 
-        _angl = self.angl_linear1(hn)
-        _cent = self.cent_linear1(hn)
+        return hn
 
-        _pred_angl = self.angl_linear2(_angl)
-        _pred_cent = self.cent_linear2(_cent)
+    def output_cent_angl(self, back: torch.Tensor):
+        _angl = self.angl_linear1(back)
+        _cent = self.cent_linear1(back)
 
-        return ((_pred_angl, _pred_cent), (h, c))
+        pred_angl = self.angl_linear2(_angl)
+        pred_cent = self.cent_linear2(_cent)
+
+        return pred_angl, pred_cent
