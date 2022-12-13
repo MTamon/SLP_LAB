@@ -101,9 +101,15 @@ class SimpleModel(nn.Module):
 
         _angl, _cent = self.output_cent_angl(back)
 
+        # Memory leak anti cuda-out-of-memory
+        del h_0, c_0, back, hn, input_lstm, batch_size
+        torch.cuda.empty_cache()
+
         return ((_angl, _cent), (h, c))
 
     def forward_lstm(self, input_tensor: torch.Tensor):
+        """LSTM forward process"""
+
         angl = input_tensor[0]
         cent = input_tensor[1]
         ac_ft_trgt = input_tensor[2]
@@ -122,11 +128,15 @@ class SimpleModel(nn.Module):
         return input_lstm
 
     def backward_lstm(self, hn: torch.Tensor):
+        """LSTM backword process"""
+
         hn = self.link_lstm_back(hn)
 
         return hn
 
     def output_cent_angl(self, back: torch.Tensor):
+        """Output layer for compute angle and centroid"""
+
         _angl = self.angl_linear1(back)
         _cent = self.cent_linear1(back)
 
