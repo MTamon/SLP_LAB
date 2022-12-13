@@ -5,6 +5,9 @@ from typing import List, Tuple
 import torch
 from torch import nn
 
+from torchvision.models import vgg16
+from torchvision.models.feature_extraction import create_feature_extractor
+
 
 class SimpleModel(nn.Module):
     def __init__(
@@ -13,6 +16,7 @@ class SimpleModel(nn.Module):
         ac_linear_dim: int,
         lstm_input_dim: int,
         lstm_output_dim: int,
+        pos_feature_size: int,
         ac_feature_size: int,
         ac_feature_width: int,
         num_layer: int,
@@ -29,20 +33,34 @@ class SimpleModel(nn.Module):
         self.ac_linear_dim = ac_linear_dim
         self.lstm_input_dim = lstm_input_dim
         self.lstm_output_dim = lstm_output_dim
+        self.pos_feature_size = pos_feature_size
         self.ac_feature_size = ac_feature_size
         self.ac_feature_width = ac_feature_width
         self.num_layer = num_layer
 
-        self.device = "cpu" if device is None else device
+        self.device = torch.device("cpu") if device is None else device
 
         self.input_ac_size = ac_feature_size * ac_feature_width
 
-        self.input_ac_feature1a = nn.Linear(self.input_ac_size, ac_feature_size)
-        self.input_ac_feature2a = nn.Linear(self.input_ac_size, ac_feature_size)
-        self.input_ac_feature1b = nn.Linear(ac_feature_size, ac_linear_dim)
-        self.input_ac_feature2b = nn.Linear(ac_feature_size, ac_linear_dim)
+        # self.input_ac_feature1a = nn.Linear(self.input_ac_size, ac_feature_size)
+        # self.input_ac_feature2a = nn.Linear(self.input_ac_size, ac_feature_size)
+        # self.input_ac_feature1b = nn.Linear(ac_feature_size, ac_linear_dim)
+        # self.input_ac_feature2b = nn.Linear(ac_feature_size, ac_linear_dim)
 
-        self.cat_input_dim = 3 + 3 + ac_linear_dim + ac_linear_dim
+        net_t = self.transfer_learning(vgg16(pretrained=True))
+        net_o = self.transfer_learning(vgg16(pretrained=True))
+
+        self.link_vgg_trgt = nn.Linear(self.input_ac_size, 3 * 244 * 244)
+        self.link_vgg_othr = nn.Linear(self.input_ac_size, 3 * 244 * 244)
+        self.extractor_trgt = create_feature_extractor(net_t, {"avgpool": "feature"})
+        self.extractor_othr = create_feature_extractor(net_o, {"avgpool": "feature"})
+
+        self.link_fc_trgt = nn.Linear(25088, ac_linear_dim)
+        self.link_fc_othr = nn.Linear(25088, ac_linear_dim)
+        self.cent_fc = nn.Linear(3, pos_feature_size)
+        self.angl_fc = nn.Linear(3, pos_feature_size)
+
+        self.cat_input_dim = pos_feature_size * 2 + ac_linear_dim * 2
 
         self.forward_lstm = nn.Linear(self.cat_input_dim, self.lstm_input_dim)
 
@@ -61,6 +79,30 @@ class SimpleModel(nn.Module):
 
         self.angl_linear2 = nn.Linear(lstm_output_dim, 3)
         self.cent_linear2 = nn.Linear(lstm_output_dim, 3)
+
+    def transfer_learning(self, net: nn.Module):
+        for param in net.parameters():
+            param.requires_grad = False
+
+        return net.to(device=self.device)
+
+    def input2vgg(self, input_t: torch.Tensor):
+        """(batch, seq, ac_f_w*ac_f_s) -> (batch * seq, 1 * ac_f_w * ac_f_s)"""
+
+        _shape = input_t.shape
+        batch = _shape[0]
+        seq = _shape[1]
+
+        input_t = input_t.contiguous()
+        input_t = input_t.view(size=(_shape[0] * _shape[1], _shape[2]))
+        return input_t, (batch, seq)
+
+    def vgg2lstm(self, input_t: torch.Tensor, b, s):
+        """(batch, seq, ac_f_w*ac_f_s) -> (batch * seq, 1 * ac_f_w * ac_f_s)"""
+
+        input_t = input_t.contiguous()
+        input_t = input_t.view(size=(b, s, -1))
+        return input_t
 
     def forward(
         self,
@@ -96,11 +138,23 @@ class SimpleModel(nn.Module):
         ac_ft_trgt = input_tensor[2]
         ac_ft_othr = input_tensor[3]
 
-        _ac_ft_trgt = self.input_ac_feature1a(ac_ft_trgt)
-        _ac_ft_othr = self.input_ac_feature2a(ac_ft_othr)
+        _ac_ft_trgt, (b, s) = self.input2vgg(ac_ft_trgt)
+        _ac_ft_othr, (b, s) = self.input2vgg(ac_ft_othr)
 
-        _ac_ft_trgt = self.input_ac_feature1b(_ac_ft_trgt)
-        _ac_ft_othr = self.input_ac_feature2b(_ac_ft_othr)
+        _ac_ft_trgt = self.link_vgg_trgt(_ac_ft_trgt)
+        _ac_ft_othr = self.link_vgg_othr(_ac_ft_othr)
+
+        _ac_ft_trgt = self.extractor_trgt(_ac_ft_trgt)["feature"]
+        _ac_ft_othr = self.extractor_othr(_ac_ft_othr)["feature"]
+
+        _ac_ft_trgt = self.vgg2lstm(_ac_ft_trgt, b, s)
+        _ac_ft_othr = self.vgg2lstm(_ac_ft_othr, b, s)
+
+        _ac_ft_trgt = self.link_fc_trgt(_ac_ft_trgt)
+        _ac_ft_othr = self.link_fc_othr(_ac_ft_othr)
+
+        angl = self.angl_fc(angl)
+        cent = self.angl_fc(cent)
 
         input_lstm = torch.cat([angl, cent, _ac_ft_trgt, _ac_ft_othr], axis=-1)
 

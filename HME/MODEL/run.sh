@@ -3,6 +3,7 @@ python main.py \
 --log log/train.log \
 --train-result-path transition/train.csv \
 --valid-result-path transition/valid.csv \
+--pos-feature-size 8 \
 --ac-feature-size 80 \
 --ac-feature-width 32 \
 --lstm-dim 16 \

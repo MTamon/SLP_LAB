@@ -73,6 +73,12 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         help="Number of dimensions of acoustic features after compression [dim]",
     )
     parser.add_argument(
+        "--pos-feature-size",
+        default=8,
+        type=int,
+        help="Number of dimensions of position features after compression [dim]",
+    )
+    parser.add_argument(
         "--batch-size",
         default=32,
         type=int,
