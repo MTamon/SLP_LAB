@@ -132,6 +132,7 @@ dmypy.json
 log/**log**
 model/**.pth
 transition/**.csv
+loader/**.dl
 
 # Vscode launch file
 .vscode

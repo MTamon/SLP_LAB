@@ -5,11 +5,8 @@ from typing import List, Tuple
 import torch
 from torch import nn
 
-from utils import override
-from simple import SimpleModel
 
-
-class ReluUsed(SimpleModel):
+class ReluUsed(nn.Module):
     def __init__(
         self,
         lstm_dim: int,
@@ -26,29 +23,56 @@ class ReluUsed(SimpleModel):
         device: torch.device = None,
         **kwargs
     ):
-        super().__init__(
-            lstm_dim,
-            ac_linear_dim,
-            lstm_input_dim,
-            lstm_output_dim,
-            pos_feature_size,
-            ac_feature_size,
-            ac_feature_width,
-            num_layer,
-            *args,
-            device=device,
-            **kwargs
-        )
+        super(ReluUsed, self).__init__()
+
+        self.args = args
+        self.kwargs = kwargs
+
+        self.lstm_dim = lstm_dim
+        self.ac_linear_dim = ac_linear_dim
+        self.lstm_input_dim = lstm_input_dim
+        self.lstm_output_dim = lstm_output_dim
+        self.pos_feature_size = pos_feature_size
+        self.ac_feature_size = ac_feature_size
+        self.ac_feature_width = ac_feature_width
+        self.num_layer = num_layer
         self.relu_dim = relu_dim
         self.dropout_rate = dropout_rate
 
+        self.device = torch.device("cpu") if device is None else device
+
+        self.input_ac_size = ac_feature_size * ac_feature_width
+
+        self.link_fc_trgt = nn.Linear(self.input_ac_size, ac_linear_dim).to(self.device)
+        self.link_fc_othr = nn.Linear(self.input_ac_size, ac_linear_dim).to(self.device)
+        self.cent_fc = nn.Linear(3, pos_feature_size).to(self.device)
+        self.angl_fc = nn.Linear(3, pos_feature_size).to(self.device)
+
+        self.cat_dim = pos_feature_size * 2 + ac_linear_dim * 2
+
+        self.link_lstm_forward = nn.Linear(self.cat_dim, lstm_input_dim).to(self.device)
+
+        self.lstm = nn.LSTM(
+            input_size=lstm_input_dim,
+            hidden_size=lstm_dim,
+            batch_first=True,
+            num_layers=num_layer,
+            bidirectional=False,
+        ).to(self.device)
+
+        self.link_lstm_back = nn.Linear(lstm_dim, self.lstm_output_dim).to(self.device)
         self.mixer1 = nn.Linear(self.lstm_output_dim, self.lstm_output_dim)
         self.dropout = nn.Dropout(dropout_rate)
         self.mixer2 = nn.Linear(self.lstm_output_dim, relu_dim)
         self.relu = nn.ReLU()
         self.mixer3 = nn.Linear(relu_dim, self.lstm_output_dim)
 
-    @override(SimpleModel)
+        self.angl_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
+        self.cent_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
+
+        self.angl_linear2 = nn.Linear(lstm_output_dim, 3).to(self.device)
+        self.cent_linear2 = nn.Linear(lstm_output_dim, 3).to(self.device)
+
     def forward(
         self,
         input_tensor: List[torch.Tensor],
@@ -95,7 +119,26 @@ class ReluUsed(SimpleModel):
 
         return ((_angl, _cent), (h, c))
 
-    @override(SimpleModel)
+    def forward_lstm(self, input_tensor: torch.Tensor):
+        """LSTM forward process"""
+
+        angl = input_tensor[0]
+        cent = input_tensor[1]
+        ac_ft_trgt = input_tensor[2]
+        ac_ft_othr = input_tensor[3]
+
+        _ac_ft_trgt = self.link_fc_trgt(ac_ft_trgt)
+        _ac_ft_othr = self.link_fc_othr(ac_ft_othr)
+
+        angl = self.angl_fc(angl)
+        cent = self.angl_fc(cent)
+
+        input_lstm = torch.cat([angl, cent, _ac_ft_trgt, _ac_ft_othr], axis=-1)
+
+        input_lstm = self.link_lstm_forward(input_lstm)
+
+        return input_lstm
+
     def backward_lstm(self, hn: torch.Tensor):
         """LSTM backword process"""
 
@@ -107,3 +150,14 @@ class ReluUsed(SimpleModel):
         mixed = self.mixer3(mixed)
 
         return mixed
+
+    def output_cent_angl(self, back: torch.Tensor):
+        """Output layer for compute angle and centroid"""
+
+        _angl = self.angl_linear1(back)
+        _cent = self.cent_linear1(back)
+
+        pred_angl = self.angl_linear2(_angl)
+        pred_cent = self.cent_linear2(_cent)
+
+        return pred_angl, pred_cent

@@ -1,27 +1,23 @@
 python main.py \
---datasite /datasets/mikawa/segments/all \
+--datasite ../data/test/segments/data \
 --log log/train.log \
 --train-result-path transition/train.csv \
 --valid-result-path transition/valid.csv \
 --ac-feature-size 80 \
 --ac-feature-width 32 \
---lstm-dim 56 \
---lstm-input-dim 128 \
---lstm-output-dim 128 \
+--lstm-dim 16 \
+--lstm-input-dim 32 \
+--lstm-output-dim 16 \
 --num-layer 2 \
---ac-linear-dim 32 \
---pos-feature-size 32 \
---relu-dim 64 \
---dropout-rate 0.3 \
+--ac-linear-dim 8 \
 --batch-size 128 \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
---epoch 50 \
+--epoch 20 \
 --model-save-path model/_model.pth \
 --lr 1e-4 \
 --beta1 0.9 \
 --beta2 0.98 \
 --eps 1e-8 \
---weight-decay 1e-3 \
---use-model relu-used
+--weight-decay 1e-6

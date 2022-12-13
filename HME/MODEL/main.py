@@ -1,6 +1,7 @@
 """For Simple-Model Learning process"""
 
 from tqdm import tqdm
+import pickle
 
 import torch
 from torch.optim import AdamW
@@ -49,6 +50,8 @@ trainer = HmeTrainer(
     logger=logger,
     **vars(args),
 )
+with open(add_datetime_path("./loader/dataloader.dl"), "wb") as p:
+    pickle.dump(trainer.train_valid_loader, p)
 
 train_length = len(trainer.train_valid_loader["train"])
 valid_length = len(trainer.train_valid_loader["valid"])
