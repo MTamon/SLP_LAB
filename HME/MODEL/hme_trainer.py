@@ -65,15 +65,17 @@ class HmeTrainer(Trainer):
                     _othr = torch.unsqueeze(src_othr[:, _seq, :], dim=1)
 
                     model_input = [_angl, _cent, _trgt, _othr]
-                    (_p_angl, _p_cent), (h, c) = self.net(model_input, h, c)
+
+                    with torch.no_grad():
+                        (_p_angl, _p_cent), (h, c) = self.net(model_input, h, c)
 
                     pred_angl = torch.cat((pred_angl, _p_angl), axis=1)
                     pred_cent = torch.cat((pred_cent, _p_cent), axis=1)
 
                     _angl, _cent = _p_angl, _p_cent
 
-                pred_angl = pred_angl[:, 1:, :]
-                pred_cent = pred_cent[:, 1:, :]
+                pred_angl = pred_angl[:, 1:, :].contiguous()
+                pred_cent = pred_cent[:, 1:, :].contiguous()
 
             pred_angl *= mask_a
             trg_angl *= mask_a
@@ -86,15 +88,19 @@ class HmeTrainer(Trainer):
             loss_cent = torch.sum((pred_cent - trg_cent) ** 2) / div
 
             loss = loss_angl + loss_cent
-            self.learn(loss)
+            loss = self.learn(loss)
 
         acc = torch.sum(abs(pred_angl - trg_angl) + abs(pred_cent - trg_cent)) / div
+        _acc = float(acc)
+        del acc
 
-        return (loss, acc)
+        return (loss, _acc)
 
     def learn(self, loss: torch.Tensor):
+        _loss = float(loss)
         if self.mode == "valid":
-            return
+            del loss
+            return _loss
 
         self.optimizer.zero_grad()
 
@@ -105,6 +111,8 @@ class HmeTrainer(Trainer):
             self.scaler.scale(loss).backward()
             self.scaler.step(self.optimizer)
             self.scaler.update()
+        del loss
+        return _loss
 
     def padding(self, data: List[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         packed = pack_sequence(data, enforce_sorted=False)
