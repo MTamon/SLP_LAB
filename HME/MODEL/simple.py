@@ -83,7 +83,7 @@ class SimpleModel(nn.Module):
 
         return net.to(device=self.device)
 
-    def input2vgg(self, input_t: torch.Tensor):
+    def input2link(self, input_t: torch.Tensor):
         """(batch, seq, ac_f_w*ac_f_s) -> (batch * seq, 1 * ac_f_w * ac_f_s)"""
 
         _shape = input_t.shape
@@ -93,6 +93,11 @@ class SimpleModel(nn.Module):
         input_t = input_t.contiguous()
         input_t = input_t.view(size=(_shape[0] * _shape[1], _shape[2]))
         return input_t, (batch, seq)
+
+    def link2vgg(self, input_t: torch.Tensor, b, s):
+        input_t = input_t.contiguous()
+        input_t = input_t.view(size=(b * s, 3, 244, 244))
+        return input_t
 
     def vgg2lstm(self, input_t: torch.Tensor, b, s):
         """(batch, seq, ac_f_w*ac_f_s) -> (batch * seq, 1 * ac_f_w * ac_f_s)"""
@@ -135,11 +140,14 @@ class SimpleModel(nn.Module):
         ac_ft_trgt = input_tensor[2]
         ac_ft_othr = input_tensor[3]
 
-        _ac_ft_trgt, (b, s) = self.input2vgg(ac_ft_trgt)
-        _ac_ft_othr, (b, s) = self.input2vgg(ac_ft_othr)
+        _ac_ft_trgt, (b, s) = self.input2link(ac_ft_trgt)
+        _ac_ft_othr, (b, s) = self.input2link(ac_ft_othr)
 
         _ac_ft_trgt = self.link_vgg_trgt(_ac_ft_trgt)
         _ac_ft_othr = self.link_vgg_othr(_ac_ft_othr)
+
+        _ac_ft_trgt = self.link2vgg(_ac_ft_trgt, b, s)
+        _ac_ft_othr = self.link2vgg(_ac_ft_othr, b, s)
 
         _ac_ft_trgt = self.extractor_trgt(_ac_ft_trgt)["feature"]
         _ac_ft_othr = self.extractor_othr(_ac_ft_othr)["feature"]
