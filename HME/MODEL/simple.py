@@ -42,15 +42,15 @@ class SimpleModel(nn.Module):
 
         self.input_ac_size = ac_feature_size * ac_feature_width
 
-        net = self.transfer_learning(vgg16(pretrained=True))
-        # net = self.transfer_learning(vgg16(pretrained=True))
+        net_t = self.transfer_learning(vgg16(pretrained=True))
+        net_o = self.transfer_learning(vgg16(pretrained=True))
 
         img_size = 3 * 244 * 244
 
         self.link_vgg_trgt = nn.Linear(self.input_ac_size, img_size).to(self.device)
         self.link_vgg_othr = nn.Linear(self.input_ac_size, img_size).to(self.device)
-        self.extractor_trgt = create_feature_extractor(net, {"avgpool": "feature"})
-        self.extractor_othr = create_feature_extractor(net, {"avgpool": "feature"})
+        self.extractor_trgt = create_feature_extractor(net_t, {"avgpool": "feature"})
+        self.extractor_othr = create_feature_extractor(net_o, {"avgpool": "feature"})
 
         self.link_fc_trgt = nn.Linear(25088, ac_linear_dim).to(self.device)
         self.link_fc_othr = nn.Linear(25088, ac_linear_dim).to(self.device)
