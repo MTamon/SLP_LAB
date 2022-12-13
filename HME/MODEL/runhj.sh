@@ -11,7 +11,7 @@ python main.py \
 --num-layer 2 \
 --ac-linear-dim 512 \
 --pos-feature-size 512 \
---batch-size 128 \
+--batch-size 64 \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
