@@ -15,7 +15,7 @@ python main.py \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
---epoch 20 \
+--epoch 50 \
 --model-save-path model/_model.pth \
 --lr 1e-4 \
 --beta1 0.9 \
