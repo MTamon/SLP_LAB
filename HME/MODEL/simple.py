@@ -13,6 +13,7 @@ class SimpleModel(nn.Module):
         ac_linear_dim: int,
         lstm_input_dim: int,
         lstm_output_dim: int,
+        pos_feature_size: int,
         ac_feature_size: int,
         ac_feature_width: int,
         num_layer: int,
@@ -29,22 +30,23 @@ class SimpleModel(nn.Module):
         self.ac_linear_dim = ac_linear_dim
         self.lstm_input_dim = lstm_input_dim
         self.lstm_output_dim = lstm_output_dim
+        self.pos_feature_size = pos_feature_size
         self.ac_feature_size = ac_feature_size
         self.ac_feature_width = ac_feature_width
         self.num_layer = num_layer
 
-        self.device = "cpu" if device is None else device
+        self.device = torch.device("cpu") if device is None else device
 
         self.input_ac_size = ac_feature_size * ac_feature_width
 
-        self.input_ac_feature1a = nn.Linear(self.input_ac_size, ac_feature_size)
-        self.input_ac_feature2a = nn.Linear(self.input_ac_size, ac_feature_size)
-        self.input_ac_feature1b = nn.Linear(ac_feature_size, ac_linear_dim)
-        self.input_ac_feature2b = nn.Linear(ac_feature_size, ac_linear_dim)
+        self.link_fc_trgt = nn.Linear(self.input_ac_size, ac_linear_dim).to(self.device)
+        self.link_fc_othr = nn.Linear(self.input_ac_size, ac_linear_dim).to(self.device)
+        self.cent_fc = nn.Linear(3, pos_feature_size).to(self.device)
+        self.angl_fc = nn.Linear(3, pos_feature_size).to(self.device)
 
-        self.cat_input_dim = 3 + 3 + ac_linear_dim + ac_linear_dim
+        self.cat_dim = pos_feature_size * 2 + ac_linear_dim * 2
 
-        self.forward_lstm = nn.Linear(self.cat_input_dim, self.lstm_input_dim)
+        self.forward_lstm = nn.Linear(self.cat_dim, self.lstm_input_dim).to(self.device)
 
         self.lstm = nn.LSTM(
             input_size=self.lstm_input_dim,
@@ -52,15 +54,15 @@ class SimpleModel(nn.Module):
             batch_first=True,
             num_layers=num_layer,
             bidirectional=False,
-        )
+        ).to(self.device)
 
-        self.backward_lstm = nn.Linear(lstm_dim, self.lstm_output_dim)
+        self.backward_lstm = nn.Linear(lstm_dim, self.lstm_output_dim).to(self.device)
 
-        self.angl_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim)
-        self.cent_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim)
+        self.angl_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
+        self.cent_linear1 = nn.Linear(lstm_output_dim, lstm_output_dim).to(self.device)
 
-        self.angl_linear2 = nn.Linear(lstm_output_dim, 3)
-        self.cent_linear2 = nn.Linear(lstm_output_dim, 3)
+        self.angl_linear2 = nn.Linear(lstm_output_dim, 3).to(self.device)
+        self.cent_linear2 = nn.Linear(lstm_output_dim, 3).to(self.device)
 
     def forward(
         self,
@@ -96,11 +98,11 @@ class SimpleModel(nn.Module):
         ac_ft_trgt = input_tensor[2]
         ac_ft_othr = input_tensor[3]
 
-        _ac_ft_trgt = self.input_ac_feature1a(ac_ft_trgt)
-        _ac_ft_othr = self.input_ac_feature2a(ac_ft_othr)
+        _ac_ft_trgt = self.link_fc_trgt(ac_ft_trgt)
+        _ac_ft_othr = self.link_fc_othr(ac_ft_othr)
 
-        _ac_ft_trgt = self.input_ac_feature1b(_ac_ft_trgt)
-        _ac_ft_othr = self.input_ac_feature2b(_ac_ft_othr)
+        angl = self.angl_fc(angl)
+        cent = self.angl_fc(cent)
 
         input_lstm = torch.cat([angl, cent, _ac_ft_trgt, _ac_ft_othr], axis=-1)
 

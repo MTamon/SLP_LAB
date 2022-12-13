@@ -5,11 +5,12 @@ python main.py \
 --valid-result-path transition/valid.csv \
 --ac-feature-size 80 \
 --ac-feature-width 32 \
---lstm-dim 16 \
---lstm-input-dim 32 \
---lstm-output-dim 16 \
+--lstm-dim 1024 \
+--lstm-input-dim 2048 \
+--lstm-output-dim 2048 \
 --num-layer 2 \
---ac-linear-dim 8 \
+--ac-linear-dim 512 \
+--pos-feature-size 512 \
 --batch-size 128 \
 --valid-rate 0.3 \
 --truncate-excess \
@@ -20,4 +21,4 @@ python main.py \
 --beta1 0.9 \
 --beta2 0.98 \
 --eps 1e-8 \
---weight-decay 1e-6
+--weight-decay 1e-2
