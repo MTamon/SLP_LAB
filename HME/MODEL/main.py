@@ -5,12 +5,15 @@ from tqdm import tqdm
 import torch
 from torch.optim import AdamW
 
-from utils import get_args, add_datetime_path
+from utils import get_args, add_datetime_path, fix_seed
 from logger_gen import set_logger
 from hme_dataset import HmeDataset
 from hme_dataloader import HmeDataloader
 from hme_trainer import HmeTrainer
 from simple import SimpleModel
+
+SEED = 42
+fix_seed(SEED)
 
 args = get_args()
 logger = set_logger("TRAIN", args.log)

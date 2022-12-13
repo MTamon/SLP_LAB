@@ -1,6 +1,9 @@
 from argparse import ArgumentParser, Namespace
 import datetime
 import re
+import random
+import torch
+import numpy as np
 
 
 def add_args(parser: ArgumentParser) -> ArgumentParser:
@@ -77,6 +80,12 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         default=10,
         type=int,
         help="Number of dimensions of position features after compression [dim]",
+    )
+    parser.add_argument(
+        "--relu-dim",
+        default=10,
+        type=int,
+        help="Number of dimensions of Relu layer [dim]",
     )
     parser.add_argument(
         "--batch-size",
@@ -192,3 +201,14 @@ def override(klass):
         return method
 
     return wrapper
+
+
+def fix_seed(seed):
+    # random
+    random.seed(seed)
+    # Numpy
+    np.random.seed(seed)
+    # Pytorch
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
