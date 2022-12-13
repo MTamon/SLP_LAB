@@ -71,12 +71,10 @@ def process(_mode):
                 with open(valid_fpath, mode="a", encoding="utf-8") as f:
                     f.write(f"{loss},{acc}\n")
 
-            _loss = round(float(loss.to("cpu")), 2)
-            _acc = round(float(acc.to("cpu")), 2)
-            prog.postfix = f"L:{_loss}, A:{_acc}"
+            prog.postfix = f"L:{round(loss, 2)}, A:{round(acc, 2)}"
 
-            phase_loss.append(float(loss))
-            phase_acc.append(float(acc))
+            phase_loss.append(loss)
+            phase_acc.append(acc)
 
     phase_loss = sum(phase_loss) / len(phase_loss)
     phase_acc = sum(phase_acc) / len(phase_acc)
