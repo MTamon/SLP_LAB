@@ -186,7 +186,14 @@ def get_args() -> Namespace:
     _args = parser.parse_args()
     _args.betas = (_args.beta1, _args.beta2)
 
+    check_args(_args)
+
     return _args
+
+
+def check_args(args: Namespace):
+    if not args.use_model in ["simple", "relu-used", "small"]:
+        ValueError(f"Invalid --use-mode value {args.use_model}")
 
 
 def add_datetime_path(path: str):

@@ -13,6 +13,7 @@ from hme_dataloader import HmeDataloader
 from hme_trainer import HmeTrainer
 from simple import SimpleModel
 from relu_used import ReluUsed
+from small import SmallModel
 
 SEED = 42
 fix_seed(SEED)
@@ -31,8 +32,8 @@ if args.use_model == "simple":
     model = SimpleModel(**vars(args), device=device)
 elif args.use_model == "relu-used":
     model = ReluUsed(**vars(args), device=device)
-else:
-    raise ValueError(f"Invalid argment {args.use_model}")
+elif args.use_model == "small":
+    model = SmallModel(**vars(args), device=device)
 
 optimizer = AdamW(
     params=model.parameters(),
