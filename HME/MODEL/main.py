@@ -25,7 +25,7 @@ dataloader = HmeDataloader(dataset, **vars(args))
 model = SimpleModel(**vars(args), device=device)
 
 optimizer = AdamW(
-    params=model.parameters(),
+    params=filter(lambda p: p.requires_grad, model.parameters()),
     lr=args.lr,
     betas=args.betas,
     eps=args.eps,
