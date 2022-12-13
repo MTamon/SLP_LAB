@@ -61,7 +61,7 @@ def process(_mode):
     phase_loss = []
     phase_acc = []
 
-    trainer.set_mode(mode)
+    trainer.set_mode(_mode)
 
     with tqdm(trainer, desc=_mode) as prog:
         for loss, acc in prog:
