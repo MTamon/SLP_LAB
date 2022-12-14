@@ -4,20 +4,21 @@ python main.py \
 --train-result-path transition/train.csv \
 --valid-result-path transition/valid.csv \
 --ac-feature-size 80 \
---ac-feature-width 32 \
---lstm-dim 16 \
---lstm-input-dim 32 \
---lstm-output-dim 16 \
+--ac-feature-width 128 \
+--lstm-dim 64 \
+--lstm-input-dim 128 \
+--lstm-output-dim 128 \
 --num-layer 2 \
---ac-linear-dim 8 \
---batch-size 128 \
+--ac-linear-dim 3 \
+--batch-size 32 \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
---epoch 20 \
+--epoch 100 \
 --model-save-path model/_model.pth \
 --lr 1e-4 \
 --beta1 0.9 \
 --beta2 0.98 \
 --eps 1e-8 \
---weight-decay 1e-6
+--weight-decay 1e-3 \
+--use-model small
