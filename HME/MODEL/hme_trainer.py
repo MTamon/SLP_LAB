@@ -87,7 +87,7 @@ class HmeTrainer(Trainer):
             loss_angl = torch.sqrt(torch.sum((pred_angl - trg_angl) ** 2) / div)
             loss_cent = torch.sqrt(torch.sum((pred_cent - trg_cent) ** 2) / div)
 
-            loss = 10 * loss_angl + loss_cent
+            loss = 5 * loss_angl + loss_cent
             loss = self.learn(loss)
 
         acc = torch.sum(abs(pred_angl - trg_angl) + abs(pred_cent - trg_cent)) / div
