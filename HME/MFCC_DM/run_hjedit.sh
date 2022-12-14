@@ -1,5 +1,5 @@
 python mfcc_building.py \
---target ~/mikawa/data \
+--target ~/mikawa/SLP_LAB/HME/data/data \
 --output /datasets/mikawa/new_segments \
 --log log/segment.log \
 --segment-size 15 \
