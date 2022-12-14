@@ -138,6 +138,8 @@ log/**log**
 out/
 
 # dataset
+HME/data/**.wav
+HME/data/**.mp4
 data/**/**
 
 # modules

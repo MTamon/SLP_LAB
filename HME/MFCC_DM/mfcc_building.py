@@ -295,6 +295,7 @@ class Mfcc_Segment:
                         segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
                         segment["ffps"] = len(segment["trgt"]) / (term[1] - term[0])
                         segment["term"] = term - term[0]
+                        segment["name"] = wpath
 
                         assert segment["trgt"].shape == segment["othr"].shape
 
@@ -440,6 +441,7 @@ class Mfcc_Segment:
             "afps": self.sample_frequency,
             "ffps": 0,
             "term": 0,
+            "name": "path",
         }
         return segment
 
