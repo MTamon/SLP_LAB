@@ -140,6 +140,7 @@ out/
 # dataset
 HME/data/**.wav
 HME/data/**.mp4
+HME/data/**.pth
 data/**/**
 
 # modules
