@@ -1,5 +1,5 @@
 python main.py \
---datasite ../data/test/segments/data \
+--datasite /mnt/t4/segments/data \
 --log log/train.log \
 --train-result-path transition/train.csv \
 --valid-result-path transition/valid.csv \
