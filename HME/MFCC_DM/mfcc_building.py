@@ -285,8 +285,8 @@ class Mfcc_Segment:
                         result.append((_segment_path, None, _info))
                         break
 
-                    trgt, t_log_p = self.get_feature(wpath, *term, csv_dt, spkID)
-                    othr, o_log_p = self.get_feature(_ic0a, *term, csv_dt, spkID)
+                    (trgt, t_log_p) = self.get_feature(wpath, *term, csv_dt, spkID)
+                    (othr, o_log_p) = self.get_feature(_ic0a, *term, csv_dt, spkID)
 
                     if trgt is not None and othr is not None:
                         segment["cent"] = np.stack(segment["cent"])
@@ -299,7 +299,9 @@ class Mfcc_Segment:
                         segment["term"] = term - term[0]
                         segment["name"] = wpath
 
-                        assert segment["trgt"].shape == segment["othr"].shape
+                        assert (
+                            segment["trgt"].shape == segment["othr"].shape
+                        ), "Shape, {0} & {1}".format(trgt.shape, othr.shape)
 
                         result.append((_segment_path, None, _info))
 
@@ -348,7 +350,10 @@ class Mfcc_Segment:
                 len(segment_wav), start, stop, spID, wav_path, csv_dt
             )
             if np.sum(mask) == 0:
-                return (np.zeros([len(mask), self.num_mel_bins]), np.zeros(len(mask)))
+                return (
+                    np.zeros([len(mask), self.num_mel_bins], dtype=np.float32),
+                    np.zeros(len(mask), dtype=np.float32),
+                )
 
             if self.feature == "mfcc":
                 _feature = self.feat_extractor.ComputeMFCC(segment_wav)
