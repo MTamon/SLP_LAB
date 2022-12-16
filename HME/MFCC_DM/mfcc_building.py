@@ -285,14 +285,16 @@ class Mfcc_Segment:
                         result.append((_segment_path, None, _info))
                         break
 
-                    trgt = self.get_feature(wpath, *term, csv_dt, spkID)
-                    othr = self.get_feature(_ic0a, *term, csv_dt, spkID)
+                    trgt, t_log_p = self.get_feature(wpath, *term, csv_dt, spkID)
+                    othr, o_log_p = self.get_feature(_ic0a, *term, csv_dt, spkID)
 
                     if trgt is not None and othr is not None:
                         segment["cent"] = np.stack(segment["cent"])
                         segment["angl"] = np.stack(segment["angl"])
-                        segment["trgt"] = self.get_feature(wpath, *term, csv_dt, spkID)
-                        segment["othr"] = self.get_feature(_ic0a, *term, csv_dt, spkID)
+                        segment["trgt"] = trgt
+                        segment["othr"] = othr
+                        segment["tlgp"] = t_log_p
+                        segment["olgp"] = o_log_p
                         segment["ffps"] = len(segment["trgt"]) / (term[1] - term[0])
                         segment["term"] = term - term[0]
                         segment["name"] = wpath
@@ -315,7 +317,9 @@ class Mfcc_Segment:
 
         return result
 
-    def get_feature(self, wav_path, start, stop, csv_dt, spID) -> np.ndarray:
+    def get_feature(
+        self, wav_path, start, stop, csv_dt, spID
+    ) -> Tuple[np.ndarray, np.ndarray]:
         assert (
             stop - start > self.segment_min_size
         ), f"term {start} - {stop} (min {self.segment_min_size})"
@@ -348,17 +352,17 @@ class Mfcc_Segment:
 
             if self.feature == "mfcc":
                 _feature = self.feat_extractor.ComputeMFCC(segment_wav)
-                assert _feature.shape[1] == self.num_ceps
             elif self.feature == "fbank":
                 _feature, _log_pow = self.feat_extractor.ComputeFBANK(segment_wav)
-                assert _feature.shape[1] == self.num_mel_bins
 
         _feature = _feature.astype(np.float32)
+        _log_pow = _log_pow.astype(np.float32)
 
         if self.sep_data:
             _feature = mask.reshape((-1, 1)) * _feature
+            _log_pow = mask.reshape((-1, 1)) * _log_pow
 
-        return _feature
+        return (_feature, _log_pow)
 
     def generate_mask(
         self, num_samples, start, stop, spID, wav_path, csv_dt
