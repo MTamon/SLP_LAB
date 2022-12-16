@@ -342,6 +342,10 @@ class Mfcc_Segment:
             _waveform = wav.readframes(_num_samples)
             _waveform = np.frombuffer(_waveform, dtype=np.int16)
 
+            name = os.path.basename(wav_path)
+            if name in ["T024_008_IC01.wav", "T024_008_IC0B.wav"]:
+                print(f"{name} : {start} -> {stop}, {len(_waveform)}")
+
             segment_wav = _waveform[_start:_stop]
             if len(segment_wav) < _stop - _start:
                 dif = (_stop - _num_samples) / self.sample_frequency
