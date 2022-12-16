@@ -467,15 +467,14 @@ class Mfcc_Segment:
 
     def make_origin_path(self, path):
         name = os.path.basename(path).split("_")
-        original = (
-            self.origin
-            + "/"
-            + name[0]
-            + "/"
-            + "_".join(name[:2])
-            + "/"
-            + "_".join(name)
-        )
+        helperID = name[0]
+        session = "_".join(name[:2])
+        name = "_".join(name)
+
+        if session[-1] in "abcdefghijklmnopqrstuvwxyz":
+            session = session[:-1]
+
+        original = self.origin + "/" + helperID + "/" + session + "/" + name
         return original
 
     def create_segment_dict(self, fps) -> dict:
