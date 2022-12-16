@@ -341,14 +341,14 @@ class Mfcc_Segment:
             if len(segment_wav) < _stop - _start:
                 dif = (_stop - _num_samples) / self.sample_frequency
                 if not (stop - start - dif >= self.segment_min_size):
-                    return None
+                    return (None, None)
                 _stop = _num_samples
 
             mask = self.generate_mask(
                 len(segment_wav), start, stop, spID, wav_path, csv_dt
             )
             if np.sum(mask) == 0:
-                return np.zeros((len(mask), self.num_mel_bins))
+                return (np.zeros([len(mask), self.num_mel_bins]), np.zeros(len(mask)))
 
             if self.feature == "mfcc":
                 _feature = self.feat_extractor.ComputeMFCC(segment_wav)
