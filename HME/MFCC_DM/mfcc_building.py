@@ -288,6 +288,9 @@ class Mfcc_Segment:
                     (trgt, t_log_p) = self.get_feature(wpath, *term, csv_dt, spkID)
                     (othr, o_log_p) = self.get_feature(_ic0a, *term, csv_dt, spkID)
 
+                    w_name = os.path.basename(wpath)
+                    i_name = os.path.basename(_ic0a)
+
                     if trgt is not None and othr is not None:
                         segment["cent"] = np.stack(segment["cent"])
                         segment["angl"] = np.stack(segment["angl"])
@@ -300,8 +303,8 @@ class Mfcc_Segment:
                         segment["name"] = wpath
 
                         assert (
-                            segment["trgt"].shape == segment["othr"].shape
-                        ), "Shape, {0} & {1}".format(trgt.shape, othr.shape)
+                            trgt.shape == othr.shape
+                        ), f"Shape, {trgt.shape}({w_name}) & {othr.shape}({i_name})"
 
                         result.append((_segment_path, None, _info))
 
