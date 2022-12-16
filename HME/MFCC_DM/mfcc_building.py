@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple
 import math
 import os
 import pickle
+import shutil
 import re
 import wave
 import sox
@@ -54,6 +55,7 @@ class Mfcc_Segment:
 
         self.args = args
 
+        self.origin = args.origin
         self.target = args.target
         self.output = args.output
 
@@ -342,10 +344,6 @@ class Mfcc_Segment:
             _waveform = wav.readframes(_num_samples)
             _waveform = np.frombuffer(_waveform, dtype=np.int16)
 
-            name = os.path.basename(wav_path)
-            if name in ["T024_008_IC01.wav", "T024_008_IC0B.wav"]:
-                print(f"{name} : {start} -> {stop}, {len(_waveform)}")
-
             segment_wav = _waveform[_start:_stop]
             if len(segment_wav) < _stop - _start:
                 dif = (_stop - _num_samples) / self.sample_frequency
@@ -431,6 +429,26 @@ class Mfcc_Segment:
             log_info = ("fps", name, fps, self.video_fps)
             result.append((None, log_info, None))
 
+        with wave.open(pair["wav"], mode="r") as pw, wave.open(_ic0a, mode="r") as iw:
+            pair_frame = pw.getnframes()
+            ic0a_frame = iw.getnframes()
+
+        if pair_frame != ic0a_frame:
+            if self.origin is not None:
+                org_pair = self.make_origin_path(pair["wav"])
+                org_ic0a = self.make_origin_path(_ic0a)
+                shutil.copyfile(org_pair, pair["wav"])
+                shutil.copyfile(org_ic0a, _ic0a)
+
+        with wave.open(pair["wav"], mode="r") as pw, wave.open(_ic0a, mode="r") as iw:
+            pair_frame = pw.getnframes()
+            ic0a_frame = iw.getnframes()
+
+            if pair_frame != ic0a_frame:
+                name = os.path.basename(pair["sh"])
+                log_info = ("nframe", name, pair_frame, ic0a_frame)
+                result.append((None, log_info, None))
+
         for wav_path in [pair["wav"], _ic0a]:
             with wave.open(wav_path, mode="r") as wf:
                 sf = wf.getframerate()
@@ -446,6 +464,19 @@ class Mfcc_Segment:
                     result.append((None, log_info, None))
 
         return result
+
+    def make_origin_path(self, path):
+        name = os.path.basename(path).split("_")
+        original = (
+            self.origin
+            + "/"
+            + name[0]
+            + "/"
+            + "_".join(name[:2])
+            + "/"
+            + "_".join(name)
+        )
+        return original
 
     def create_segment_dict(self, fps) -> dict:
         segment = {

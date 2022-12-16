@@ -25,6 +25,12 @@ def add_mfcc_args(parser: ArgumentParser) -> ArgumentParser:
     """add argument"""
 
     parser.add_argument(
+        "--origin",
+        default=None,
+        type=str,
+        help="Path for original database.",
+    )
+    parser.add_argument(
         "--target",
         default="./",
         type=str,
