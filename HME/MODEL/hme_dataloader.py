@@ -22,6 +22,8 @@ class HmeDataloader(Dataloader):
         super().__init__(
             dataset, batch_size, truncate_excess, do_shuffle, *args, **kwargs
         )
+        self.args = args
+        self.kwargs = kwargs
 
     @override(Dataloader)
     def collect_batch(
