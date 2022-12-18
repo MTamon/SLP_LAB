@@ -7,7 +7,7 @@ import torch
 from torch import nn
 from torch.optim.optimizer import Optimizer
 
-from dataloader import Dataloader
+from .dataloader import Dataloader
 
 
 class Trainer(metaclass=ABCMeta):

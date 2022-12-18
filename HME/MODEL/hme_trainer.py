@@ -7,8 +7,8 @@ from torch import nn
 from torch.nn.utils.rnn import pack_sequence, pad_packed_sequence
 from torch.optim.optimizer import Optimizer
 
-from .src import Trainer
-from .hme_dataloader import HmeDataloader
+from src import Trainer
+from hme_dataloader import HmeDataloader
 
 
 class HmeTrainer(Trainer):

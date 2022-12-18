@@ -6,7 +6,7 @@ from sklearn.utils import shuffle
 from numpy.typing import NDArray
 import numpy as np
 
-from dataset import Dataset
+from .dataset import Dataset
 
 
 class Dataloader:
