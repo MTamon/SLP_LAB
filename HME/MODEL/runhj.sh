@@ -16,7 +16,7 @@ python main.py \
 --truncate-excess \
 --do-shuffle \
 --epoch 50 \
---model-save-path model/_model.pth \
+--model-save-path checkpoint/_model.pth \
 --lr 1e-4 \
 --beta1 0.9 \
 --beta2 0.98 \

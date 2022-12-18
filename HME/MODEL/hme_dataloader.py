@@ -4,9 +4,9 @@ from __future__ import annotations
 from typing import List, Dict
 import torch
 
-from utils import override
-from dataloader import Dataloader
-from hme_dataset import HmeDataset
+from .src import override
+from .src import Dataloader
+from .hme_dataset import HmeDataset
 
 
 class HmeDataloader(Dataloader):

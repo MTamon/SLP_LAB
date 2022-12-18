@@ -6,14 +6,14 @@ import pickle
 import torch
 from torch.optim import AdamW
 
-from utils import get_args, add_datetime_path, fix_seed
-from logger_gen import set_logger
-from hme_dataset import HmeDataset
-from hme_dataloader import HmeDataloader
-from hme_trainer import HmeTrainer
-from simple import SimpleModel
-from relu_used import ReluUsed
-from small import SmallModel
+from .src import get_args, add_datetime_path, fix_seed
+from .src import set_logger
+from .hme_dataset import HmeDataset
+from .hme_dataloader import HmeDataloader
+from .hme_trainer import HmeTrainer
+from .model import SimpleModel
+from .model import ReluUsed
+from .model import SmallModel
 
 SEED = 42
 fix_seed(SEED)

@@ -9,8 +9,8 @@ import torch
 import moviepy.editor as mpedit
 from pydub import AudioSegment
 
-from utils import get_data, Video, visualize_result
-from small import SmallModel
+from .src import get_data, Video, visualize_result
+from .model import SmallModel
 
 
 model_path = "HME/data/modelSE49.pth"

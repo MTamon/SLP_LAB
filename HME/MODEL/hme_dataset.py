@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 import torch
 
-from dataset import Dataset
+from .src import Dataset
 
 
 class HmeDataset(Dataset):

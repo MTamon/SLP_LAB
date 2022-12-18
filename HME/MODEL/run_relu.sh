@@ -18,7 +18,7 @@ python main.py \
 --truncate-excess \
 --do-shuffle \
 --epoch 50 \
---model-save-path model/modelReLu.pth \
+--model-save-path checkpoint/modelReLu.pth \
 --lr 1e-4 \
 --beta1 0.9 \
 --beta2 0.98 \
