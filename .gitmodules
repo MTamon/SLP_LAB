@@ -1,0 +1,3 @@
+[submodule "HME/MODEL/model/ohta/modules/ContextNet"]
+	path = HME/MODEL/model/ohta/modules/ContextNet
+	url = https://github.com/upskyy/ContextNet.git
