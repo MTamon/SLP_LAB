@@ -8,3 +8,4 @@ from .src.logger_gen import set_logger
 from .model import SimpleModel
 from .model import SmallModel
 from .model import ReluUsed
+from .model.ohta.alpha import Alpha
