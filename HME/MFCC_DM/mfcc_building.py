@@ -287,7 +287,7 @@ class Mfcc_Segment:
                             try:
                                 seg = pickle.load(f)
                             except Exception as exc:
-                                print(name)
+                                print(_name)
                                 raise exc
                         if "tlgp" in seg.keys() and "olgp" in seg.keys():
                             if (
