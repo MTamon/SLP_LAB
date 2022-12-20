@@ -26,12 +26,20 @@ class OhtaDataset(Dataset):
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+        self._conf_dict = {}
         self.data_list = self.rearange_table()
 
     def rearange_table(self):
         _data_list = []
 
         for fname in tqdm(self.data_list, desc="Rearangement-Table"):
+
+            finfo = fname.split("_")
+            ftype = "_".join(finfo[:4])
+            fstrt = int(finfo[4])
+            if not ftype in self._conf_dict.keys():
+                self._conf_dict[ftype] = []
+
             segment_path = self.datasite + "/" + fname
             with open(segment_path, "rb") as seg:
                 segment = pickle.load(seg)
@@ -39,6 +47,11 @@ class OhtaDataset(Dataset):
                 ffps = segment["ffps"]
 
             for i in range(len(segment["cent"])):
+                if (i + fstrt) in self._conf_dict[ftype]:
+                    continue
+                else:
+                    self._conf_dict[ftype].append(i + fstrt)
+
                 fframe = int(i / vfps * ffps)
                 ac_prev_idx = fframe + 1 - self.acostic_frame_width
                 ph_prev_idx = i + 1 - self.physic_frame_width
