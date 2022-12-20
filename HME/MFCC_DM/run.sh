@@ -1,6 +1,6 @@
 python mfcc_building.py \
 --target /mnt/t4/builded \
---output /mnt/t4/segments \
+--output /mnt/t4/log_segments \
 --log log/segment.log \
 --segment-size 15 \
 --segment-stride 5 \
