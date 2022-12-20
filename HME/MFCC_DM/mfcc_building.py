@@ -360,14 +360,15 @@ class Mfcc_Segment:
                     return (None, None)
                 _stop = _num_samples
 
-            mask = self.generate_mask(
-                len(segment_wav), start, stop, spID, wav_path, csv_dt
-            )
-            if np.sum(mask) == 0:
-                return (
-                    np.zeros([len(mask), self.num_mel_bins], dtype=np.float32),
-                    np.zeros(len(mask), dtype=np.float32),
+            if self.sep_data:
+                mask = self.generate_mask(
+                    len(segment_wav), start, stop, spID, wav_path, csv_dt
                 )
+                if np.sum(mask) == 0:
+                    return (
+                        np.zeros([len(mask), self.num_mel_bins], dtype=np.float32),
+                        np.zeros(len(mask), dtype=np.float32),
+                    )
 
             if self.feature == "mfcc":
                 _feature = self.feat_extractor.ComputeMFCC(segment_wav)
