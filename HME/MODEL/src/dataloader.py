@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from typing import Any, List, Dict
-from sklearn.utils import shuffle
+from numpy.random import shuffle
 from numpy.typing import NDArray
 import numpy as np
 
@@ -26,7 +26,8 @@ class Dataloader:
         self.truncate_excess = truncate_excess
         self.do_shuffle = do_shuffle
 
-        self.org_list = shuffle(np.array(self.dataset.data_list))
+        self.org_list = np.array(self.dataset.data_list).copy()
+        shuffle(self.org_list)
         self.idx_list = np.arange(len(dataset))
         self.table = []
 
@@ -59,32 +60,20 @@ class Dataloader:
 
     def _init_table(self):
         if self.do_shuffle:
-            _data_list = shuffle(self.idx_list)
+            _data_list = self.idx_list.copy()
+            shuffle(_data_list)
         else:
             _data_list = self.idx_list
 
         self.table = self.batching(_data_list)
 
     def batching(self, data_list: NDArray[Any]) -> List[NDArray[Any]]:
-        batches = [[]]
+        if len(data_list) % self.batch_size != 0:
+            iteration = int(len(data_list) / self.batch_size)
+            data_list = data_list[: iteration * self.batch_size]
+        batched_array = np.split(data_list, iteration)
 
-        for i, data in enumerate(data_list):
-            batches[-1].append(data)
-
-            if i + 1 == len(data_list):
-                if len(batches) > 1:
-                    if len(batches[-1]) < self.batch_size and self.truncate_excess:
-                        batches.pop(-1)
-                break
-
-            if len(batches[-1]) == self.batch_size:
-                batches.append([])
-                continue
-
-        if batches == [[]]:
-            batches = []
-
-        return batches
+        return batched_array
 
     def collect_batch(self, batch_idx: List[int]) -> List[Any]:
         _batch = []
@@ -98,9 +87,10 @@ class Dataloader:
             raise ValueError("'valid_rate' must be (0.0, 1.0).")
 
         if self.do_shuffle:
-            _idx_list = shuffle(self.idx_list)
+            _idx_list = self.idx_list.copy()
+            shuffle(_idx_list)
         else:
-            _idx_list = self.idx_list
+            _idx_list = self.idx_list.copy()
 
         all_data = len(self.dataset)
         train_list = _idx_list[: int(-all_data * valid_rate)]
