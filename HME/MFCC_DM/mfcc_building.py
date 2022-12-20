@@ -286,9 +286,13 @@ class Mfcc_Segment:
                         with open(_segment_path, "rb") as f:
                             seg = pickle.load(f)
                         if "tlgp" in seg.keys() and "olgp" in seg.keys():
-                            segment = self.create_segment_dict(fps)
-                            result.append((_segment_path, None, _info))
-                            break
+                            if (
+                                len(seg["tlgp"].shape) == 1
+                                and len(seg["olgp"].shape) == 1
+                            ):
+                                segment = self.create_segment_dict(fps)
+                                result.append((_segment_path, None, _info))
+                                break
 
                     (trgt, t_log_p) = self.get_feature(wpath, *term, csv_dt, spkID)
                     (othr, o_log_p) = self.get_feature(_ic0a, *term, csv_dt, spkID)
@@ -311,6 +315,7 @@ class Mfcc_Segment:
                             trgt.shape == othr.shape
                         ), f"Shape, {trgt.shape}({w_name}) & {othr.shape}({i_name})"
                         assert len(t_log_p.shape) == 1, f"FILE : {_name}"
+                        assert len(o_log_p.shape) == 1, f"FILE : {_name}"
 
                         result.append((_segment_path, None, _info))
 
