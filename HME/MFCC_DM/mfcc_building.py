@@ -310,6 +310,7 @@ class Mfcc_Segment:
                         assert (
                             trgt.shape == othr.shape
                         ), f"Shape, {trgt.shape}({w_name}) & {othr.shape}({i_name})"
+                        assert len(t_log_p.shape) == 1, f"FILE : {_name}"
 
                         result.append((_segment_path, None, _info))
 
