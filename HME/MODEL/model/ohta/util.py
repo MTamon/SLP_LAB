@@ -162,6 +162,7 @@ class AcosticSet(nn.Module):
         self.input_dim = input_dim
         self.acostic_frame_width = acostic_frame_width
         self.use_power = use_power
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         self.acostic_enc = ConvBlock.make_conv_blocks(
             input_dim, num_layers, kernel_size, num_channels, cnet_out_dim
@@ -185,8 +186,8 @@ class AcosticSet(nn.Module):
             (1, self.input_dim, self.acostic_frame_width), dtype=torch.float32
         )
         length = torch.tensor([self.acostic_frame_width], dtype=torch.int32)
-        output_tensor = input_tensor
-        output_length = length
+        output_tensor = input_tensor.to(device=self.device)
+        output_length = length.to(device=self.device)
 
         for block in self.acostic_enc:
             output_tensor, output_length = block(output_tensor, output_length)
@@ -203,7 +204,7 @@ class AcosticSet(nn.Module):
         """
         output = fbank.transpose(1, 2)
         length = torch.tensor(fbank.shape[1]).repeat(fbank.shape[0])
-        output_length = length
+        output_length = length.to(device=self.device)
 
         if self.use_power:
             iterator = zip(self.acostic_enc, self.power_enc)
