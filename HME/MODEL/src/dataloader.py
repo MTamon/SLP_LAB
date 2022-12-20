@@ -68,9 +68,8 @@ class Dataloader:
         self.table = self.batching(_data_list)
 
     def batching(self, data_list: NDArray[Any]) -> List[NDArray[Any]]:
-        if len(data_list) % self.batch_size != 0:
-            iteration = int(len(data_list) / self.batch_size)
-            data_list = data_list[: iteration * self.batch_size]
+        iteration = int(len(data_list) / self.batch_size)
+        data_list = data_list[: iteration * self.batch_size]
         batched_array = np.split(data_list, iteration)
 
         return batched_array

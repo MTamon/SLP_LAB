@@ -38,7 +38,7 @@ class OhtaDataset(Dataset):
             ftype = "_".join(finfo[:4])
             fstrt = int(finfo[4])
 
-            if ftype in _data_list:
+            if not ftype in _data_list:
                 _data_list[ftype] = {}
 
             segment_path = self.datasite + "/" + fname
@@ -58,13 +58,15 @@ class OhtaDataset(Dataset):
                     continue
 
                 abs_idx = i + fstrt
-                key = self.make_dict_key(abs_idx)
                 _set = [fname, i, abs_idx]
+                key = self.make_dict_key(abs_idx)
+                if not key in _data_list[ftype]:
+                    _data_list[ftype][key] = []
                 if not self.binary_search(_data_list, ftype, key, abs_idx):
                     _data_list = self.insertion_sort(_data_list, ftype, key, _set)
 
         new_dl = []
-        for _type in enumerate(tqdm(_data_list, desc="     Shaping-Table")):
+        for _type in tqdm(_data_list, desc="     Shaping-Table"):
             for _key in _data_list[_type]:
                 new_dl += _data_list[_type][_key]
 
