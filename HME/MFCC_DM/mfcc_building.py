@@ -290,16 +290,13 @@ class Mfcc_Segment:
                                 not (0 in seg["tlgp"] or 0 in seg["olgp"])
                                 or self.sep_data
                             ):
-                                segment = self.create_segment_dict(fps)
-                                result.append((_segment_path, None, _info))
-                                break
-                            elif (
-                                len(seg["tlgp"].shape) == 1
-                                and len(seg["olgp"].shape) == 1
-                            ):
-                                segment = self.create_segment_dict(fps)
-                                result.append((_segment_path, None, _info))
-                                break
+                                if (
+                                    len(seg["tlgp"].shape) == 1
+                                    and len(seg["olgp"].shape) == 1
+                                ):
+                                    segment = self.create_segment_dict(fps)
+                                    result.append((_segment_path, None, _info))
+                                    break
 
                     (trgt, t_log_p) = self.get_feature(wpath, *term, csv_dt, spkID)
                     (othr, o_log_p) = self.get_feature(_ic0a, *term, csv_dt, spkID)
