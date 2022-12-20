@@ -49,20 +49,24 @@ class OhtaDataloader(Dataloader):
             _batch[1][0] += record[1][0]
             _batch[1][1] += record[1][1]
 
-        batch = [
-            [
-                [torch.stack(_batch[0][0]), torch.stack(_batch[0][1])],
-                [torch.stack(_batch[0][2]), torch.stack(_batch[0][3])],
-                [torch.stack(_batch[0][4]), torch.stack(_batch[0][5])],
-                [torch.stack(_batch[0][6]), torch.stack(_batch[0][7])],
-                [torch.stack(_batch[0][8]), torch.stack(_batch[0][9])],
-                [torch.stack(_batch[0][10]), torch.stack(_batch[0][11])],
-            ],
-            [
-                torch.stack(_batch[1][0]),
-                torch.stack(_batch[1][1]),
-            ],
-        ]
+        try:
+            batch = [
+                [
+                    [torch.stack(_batch[0][0]), torch.stack(_batch[0][1])],
+                    [torch.stack(_batch[0][2]), torch.stack(_batch[0][3])],
+                    [torch.stack(_batch[0][4]), torch.stack(_batch[0][5])],
+                    [torch.stack(_batch[0][6]), torch.stack(_batch[0][7])],
+                    [torch.stack(_batch[0][8]), torch.stack(_batch[0][9])],
+                    [torch.stack(_batch[0][10]), torch.stack(_batch[0][11])],
+                ],
+                [
+                    torch.stack(_batch[1][0]),
+                    torch.stack(_batch[1][1]),
+                ],
+            ]
+        except Exception as exc:
+            print(record[2])
+            raise exc
 
         return batch
 

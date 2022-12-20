@@ -214,6 +214,7 @@ class OhtaDataset(Dataset):
                 [torch.tensor(ans_angl, **common)],
                 [torch.tensor(ans_cent, **common)],
             ],
+            file_pointer[0],
         )
 
         return one_set
