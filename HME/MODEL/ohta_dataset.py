@@ -30,13 +30,16 @@ class OhtaDataset(Dataset):
         self.data_list = self.rearange_table()
 
     def rearange_table(self):
-        _data_list = []
+        _data_list = {}
 
         for fname in tqdm(self.data_list, desc="Rearangement-Table"):
 
             finfo = fname.split("_")
             ftype = "_".join(finfo[:4])
             fstrt = int(finfo[4])
+
+            if ftype in _data_list:
+                _data_list[ftype] = {}
 
             segment_path = self.datasite + "/" + fname
             with open(segment_path, "rb") as seg:
@@ -54,20 +57,87 @@ class OhtaDataset(Dataset):
                 if ac_prev_idx < 1 or ph_prev_idx < 1:
                     continue
 
-                _data_list.append([fname, i, (ftype, (i + fstrt))])
+                abs_idx = i + fstrt
+                key = self.make_dict_key(abs_idx)
+                _set = [fname, i, abs_idx]
+                if not self.binary_search(_data_list, ftype, key, abs_idx):
+                    _data_list = self.insertion_sort(_data_list, ftype, key, _set)
 
         new_dl = []
-        for i, _data in enumerate(tqdm(_data_list, desc="    Creaning-Table")):
-            flg = True
-            for n in range(i + 1, len(_data_list), 1):
-                n_data = _data_list[n]
-                if _data[2][0] == n_data[2][0] and _data[2][1] == n_data[2][1]:
-                    flg = False
-                    break
-            if flg:
-                new_dl.append(_data[:2])
+        for _type in enumerate(tqdm(_data_list, desc="     Shaping-Table")):
+            for _key in _data_list[_type]:
+                new_dl += _data_list[_type][_key]
 
         return new_dl
+
+    def binary_search(self, _data_list, ftype, key, abs_idx):
+        target = _data_list[ftype][key]
+
+        left_index = 0
+        right_index = len(target) - 1
+        while left_index <= right_index:
+            middle_index = (left_index + right_index) // 2
+            middle_value = target[middle_index][2]
+
+            if abs_idx < middle_value:
+                right_index = middle_index - 1
+                continue
+            if abs_idx > middle_value:
+                left_index = middle_index + 1
+                continue
+
+            return True
+
+        return False
+
+    def make_dict_key(self, idx):
+        s = idx // 100
+        e = s + 1
+        return (s * 100, e * 100)
+
+    def insertion_sort(self, _data_list, ftype, key, _set):
+        target: list = _data_list[ftype][key]
+
+        if len(target) == 0:
+            target = [_set]
+            _data_list[ftype][key] = target
+            return _data_list
+
+        left_index = 0
+        right_index = len(target) - 1
+        insert_idx = -1
+        not_found = True
+        while left_index <= right_index:
+            middle_index = (left_index + right_index) // 2
+            middle_value = target[middle_index][2]
+
+            if _set[2] < middle_value:
+                right_index = middle_index - 1
+                if right_index >= 0:
+                    if target[right_index][2] < _set[2]:
+                        insert_idx = right_index
+                        break
+                else:
+                    insert_idx = 0
+                continue
+            if _set[2] > middle_value:
+                left_index = middle_index + 1
+                if left_index < len(target):
+                    if target[left_index][2] > _set[2]:
+                        insert_idx = left_index - 1
+                        break
+                else:
+                    insert_idx = len(target)
+                continue
+
+            target.insert(middle_index, _set)
+            not_found = False
+            break
+
+        if not_found:
+            target.insert(insert_idx, _set)
+        _data_list[ftype][key] = target
+        return _data_list
 
     def _get_data(
         self, file_pointer: Tuple[str, int]
