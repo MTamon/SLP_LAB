@@ -68,7 +68,10 @@ class OhtaDataset(Dataset):
         new_dl = []
         for _type in tqdm(_data_list, desc="     Shaping-Table"):
             for _key in _data_list[_type]:
-                new_dl += _data_list[_type][_key][:2]
+                _new_dl = []
+                for _idx in _data_list[_type][_key]:
+                    _new_dl.append(_data_list[_type][_key][_idx][:2])
+                new_dl += _new_dl
 
         return new_dl
 
