@@ -37,8 +37,6 @@ class OhtaDataset(Dataset):
             finfo = fname.split("_")
             ftype = "_".join(finfo[:4])
             fstrt = int(finfo[4])
-            if not ftype in self._conf_dict.keys():
-                self._conf_dict[ftype] = []
 
             segment_path = self.datasite + "/" + fname
             with open(segment_path, "rb") as seg:
@@ -47,11 +45,6 @@ class OhtaDataset(Dataset):
                 ffps = segment["ffps"]
 
             for i in range(len(segment["cent"])):
-                if (i + fstrt) in self._conf_dict[ftype]:
-                    continue
-                else:
-                    self._conf_dict[ftype].append(i + fstrt)
-
                 fframe = int(i / vfps * ffps)
                 ac_prev_idx = fframe + 1 - self.acostic_frame_width
                 ph_prev_idx = i + 1 - self.physic_frame_width
@@ -61,9 +54,20 @@ class OhtaDataset(Dataset):
                 if ac_prev_idx < 1 or ph_prev_idx < 1:
                     continue
 
-                _data_list.append((fname, i))
+                _data_list.append([fname, i, (ftype, (i + fstrt))])
 
-        return _data_list
+        new_dl = []
+        for i, _data in enumerate(tqdm(_data_list, desc="    Creaning-Table")):
+            flg = True
+            for n in range(i + 1, len(_data_list), 1):
+                n_data = _data_list[n]
+                if _data[2][0] == n_data[2][0] and _data[2][1] == n_data[2][1]:
+                    flg = False
+                    break
+            if flg:
+                new_dl.append(_data[:2])
+
+        return new_dl
 
     def _get_data(
         self, file_pointer: Tuple[str, int]
