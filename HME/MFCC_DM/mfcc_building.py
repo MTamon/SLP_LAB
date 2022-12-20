@@ -283,9 +283,12 @@ class Mfcc_Segment:
                     _name = "_".join([f_name, str(_term[0]), str(_term[1])]) + ".seg"
                     _segment_path = "/".join([self.seg_path, _name])
                     if os.path.isfile(_segment_path) and not self.redo:
-                        segment = self.create_segment_dict(fps)
-                        result.append((_segment_path, None, _info))
-                        break
+                        with open(_segment_path, "rb") as f:
+                            seg = pickle.load(f)
+                        if "tlgp" in seg.keys() and "olgp" in seg.keys():
+                            segment = self.create_segment_dict(fps)
+                            result.append((_segment_path, None, _info))
+                            break
 
                     (trgt, t_log_p) = self.get_feature(wpath, *term, csv_dt, spkID)
                     (othr, o_log_p) = self.get_feature(_ic0a, *term, csv_dt, spkID)
