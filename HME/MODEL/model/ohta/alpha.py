@@ -2,7 +2,7 @@ from typing import List
 import torch
 import torch.nn as nn
 
-from util import Encoder
+from model.ohta.util import Encoder
 
 
 model_size_rate = {"small": 0.5, "mediam": 1.0, "large": 2.0}
@@ -14,6 +14,7 @@ def build_alpha(
     use_delta: bool = True,
     use_person: tuple = (True, True),
     device: torch.device = None,
+    **_,
 ):
     assert (
         model_type in model_size_rate
@@ -27,7 +28,7 @@ def build_alpha(
     acostic_dim = 80
     num_layers = 5
     kernel_size = 5
-    out_kernel_size = 5
+    out_kernel_size = 3
     num_channels = int(128 * size_rate)
     cnet_out_dim = int(320 * size_rate)
     encoder_dim = int(512 * size_rate)
@@ -51,6 +52,13 @@ def build_alpha(
     alpha.to(device=torch.device(device))
 
     return alpha
+
+
+def get_args(kw: dict, **k):
+    assert len(k) == 1
+
+    key = list(k.keys())[0]
+    return kw.get(key, k[key])
 
 
 class Alpha(nn.Module):

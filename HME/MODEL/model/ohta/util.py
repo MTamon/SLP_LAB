@@ -1,4 +1,4 @@
-from modules.ContextNet.contextnet.convolution import ConvBlock
+from model.ohta.modules.ContextNet.contextnet.convolution import ConvBlock
 
 from typing import List
 import torch
@@ -120,7 +120,7 @@ class Encoder(nn.Module):
     def forward(self, input_tensor: List[List[torch.Tensor]]):
         """
         Args:
-            input_tensor (List[torch.Tensor]): ``[angle, centroid fbank1, fbank2, log_power1, log_power2]``
+            input_tensor (List[torch.Tensor]): ``[angle, centroid, fbank1, fbank2, log_power1, log_power2]``
         """
         angle = input_tensor[0]
         centroid = input_tensor[1]
@@ -129,7 +129,10 @@ class Encoder(nn.Module):
         if self.use_delta:
             pass
 
+        batch_size = angle[0].shape[0]
+
         physic_tensor = torch.cat((*angle, *centroid), dim=-1)
+        physic_tensor = physic_tensor.view(size=[batch_size, -1])
         physic_output = self.PFE(physic_tensor)
 
         acostic_output = self._fbank_process(*acostic_input)
@@ -181,7 +184,7 @@ class AcosticSet(nn.Module):
         input_tensor = torch.zeros(
             (1, self.input_dim, self.acostic_frame_width), dtype=torch.float32
         )
-        length = torch.zeros((1, self.acostic_frame_width), dtype=torch.int32)
+        length = torch.tensor([self.acostic_frame_width], dtype=torch.int32)
         output_tensor = input_tensor
         output_length = length
 
@@ -199,13 +202,13 @@ class AcosticSet(nn.Module):
             torch.FloatTensor: ``(batch, output_dim)``
         """
         output = fbank.transpose(1, 2)
-        length = torch.tensor(fbank.shape[-1]).repeat(fbank.shape[0])
+        length = torch.tensor(fbank.shape[1]).repeat(fbank.shape[0])
         output_length = length
 
         if self.use_power:
             iterator = zip(self.acostic_enc, self.power_enc)
             power_length = length
-            power_output = log_power.view(size=[-1, 1, length[0]])
+            power_output = log_power.unsqueeze(1)
         else:
             iterator = self.acostic_enc
 

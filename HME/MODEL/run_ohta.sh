@@ -1,0 +1,22 @@
+python ohta.py \
+--datasite None \
+--log log/train.log \
+--train-result-path transition/train.csv \
+--valid-result-path transition/valid.csv \
+--model-type mediam \
+--use-power \
+--use-delta \
+--use-person1 \
+--use-person2 \
+--batch-size 32 \
+--valid-rate 0.3 \
+--truncate-excess \
+--do-shuffle \
+--epoch 100 \
+--model-save-path model/OHTA.pth \
+--save-per-epoch \
+--lr 1e-4 \
+--beta1 0.9 \
+--beta2 0.98 \
+--eps 1e-8 \
+--weight-decay 1e-2 

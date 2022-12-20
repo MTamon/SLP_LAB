@@ -419,7 +419,8 @@ disable=raw-checker-failed,
         not-callable,
         no-member,
         import-error,
-        useless-parent-delegation
+        useless-parent-delegation,
+        no-name-in-module
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
