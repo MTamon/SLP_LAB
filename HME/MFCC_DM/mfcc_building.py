@@ -284,7 +284,11 @@ class Mfcc_Segment:
                     _segment_path = "/".join([self.seg_path, _name])
                     if os.path.isfile(_segment_path) and not self.redo:
                         with open(_segment_path, "rb") as f:
-                            seg = pickle.load(f)
+                            try:
+                                seg = pickle.load(f)
+                            except Exception as exc:
+                                print(name)
+                                raise exc
                         if "tlgp" in seg.keys() and "olgp" in seg.keys():
                             if (
                                 not (0 in seg["tlgp"] or 0 in seg["olgp"])
