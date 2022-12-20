@@ -167,6 +167,13 @@ class OhtaDataset(Dataset):
         trgt_lpower = torch.tensor(segment["tlgp"][ac_prev_idx : fframe + 1], **common)
         othr_lpower = torch.tensor(segment["olgp"][ac_prev_idx : fframe + 1], **common)
 
+        assert trgt_window.shape[0] == self.acostic_frame_width
+        assert othr_window.shape[0] == self.acostic_frame_width
+        assert trgt_window.shape[1] == self.acostic_dim
+        assert othr_window.shape[1] == self.acostic_dim
+        assert len(trgt_lpower.shape) == 0
+        assert len(othr_lpower.shape) == 0
+
         _trgt_window = torch.tensor(segment["trgt"][ac_prev_idx - 1 : fframe], **common)
         _othr_window = torch.tensor(segment["othr"][ac_prev_idx - 1 : fframe], **common)
         dtrgt_window = self.clone_detach(trgt_window - _trgt_window)
