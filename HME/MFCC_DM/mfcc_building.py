@@ -293,8 +293,11 @@ class Mfcc_Segment:
                                 segment = self.create_segment_dict(fps)
                                 result.append((_segment_path, None, _info))
                                 break
-                            if not (
-                                0 == np.min(seg["tlgp"]) or 0 == np.min(seg["olgp"])
+                            if (
+                                not (
+                                    0 in np.min(seg["tlgp"]) or 0 in np.min(seg["olgp"])
+                                )
+                                or self.sep_data
                             ):
                                 segment = self.create_segment_dict(fps)
                                 result.append((_segment_path, None, _info))
