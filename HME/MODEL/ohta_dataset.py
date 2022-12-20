@@ -62,7 +62,7 @@ class OhtaDataset(Dataset):
         vfps = segment["vfps"]
         ffps = segment["ffps"]
 
-        common = {"device": self.device, "dtype": torch.float32}
+        common = {"device": self.device, "dtype": torch.float32, "requires_grad": True}
 
         i = file_pointer[1]
 
@@ -75,23 +75,23 @@ class OhtaDataset(Dataset):
         trgt_lpower = torch.tensor(segment["tlgp"][ac_prev_idx : fframe + 1], **common)
         othr_lpower = torch.tensor(segment["olgp"][ac_prev_idx : fframe + 1], **common)
 
-        _trgt_window = segment["trgt"][ac_prev_idx - 1 : fframe]
-        _othr_window = segment["othr"][ac_prev_idx - 1 : fframe]
-        dtrgt_window = torch.tensor(trgt_window - _trgt_window, **common)
-        dothr_window = torch.tensor(othr_window - _othr_window, **common)
+        _trgt_window = torch.tensor(segment["trgt"][ac_prev_idx - 1 : fframe], **common)
+        _othr_window = torch.tensor(segment["othr"][ac_prev_idx - 1 : fframe], **common)
+        dtrgt_window = self.clone_detach(trgt_window - _trgt_window)
+        dothr_window = self.clone_detach(othr_window - _othr_window)
 
-        _trgt_lpower = segment["tlgp"][ac_prev_idx - 1 : fframe]
-        _othr_lpower = segment["olgp"][ac_prev_idx - 1 : fframe]
-        dtrgt_lpower = torch.tensor(trgt_lpower - _trgt_lpower, **common)
-        dothr_lpower = torch.tensor(othr_lpower - _othr_lpower, **common)
+        _trgt_lpower = torch.tensor(segment["tlgp"][ac_prev_idx - 1 : fframe], **common)
+        _othr_lpower = torch.tensor(segment["olgp"][ac_prev_idx - 1 : fframe], **common)
+        dtrgt_lpower = self.clone_detach(trgt_lpower - _trgt_lpower)
+        dothr_lpower = self.clone_detach(othr_lpower - _othr_lpower)
 
         cent_window = torch.tensor(segment["cent"][ph_prev_idx : i + 1], **common)
         angl_window = torch.tensor(segment["angl"][ph_prev_idx : i + 1], **common)
 
-        _cent_window = segment["cent"][ph_prev_idx - 1 : i]
-        _angl_window = segment["angl"][ph_prev_idx - 1 : i]
-        dcent_window = torch.tensor(cent_window - _cent_window, **common)
-        dangl_window = torch.tensor(angl_window - _angl_window, **common)
+        _cent_window = torch.tensor(segment["cent"][ph_prev_idx - 1 : i], **common)
+        _angl_window = torch.tensor(segment["angl"][ph_prev_idx - 1 : i], **common)
+        dcent_window = self.clone_detach(cent_window - _cent_window)
+        dangl_window = self.clone_detach(angl_window - _angl_window)
 
         ans_angl = segment["angl"][i + 1] - segment["angl"][i]
         ans_cent = segment["cent"][i + 1] - segment["cent"][i]
@@ -118,3 +118,6 @@ class OhtaDataset(Dataset):
         )
 
         return one_set
+
+    def clone_detach(self, tensor: torch.Tensor):
+        return tensor.clone().detach().requires_grad_(True)

@@ -469,14 +469,14 @@ def get_data(
     trgt = torch.tensor(np.stack(trgt))
     othr = torch.tensor(np.stack(othr))
 
-    ans_cent = cent[1:].clone()
+    ans_cent = cent[1:].clone().detach().requires_grad_(True)
     cent = cent[:-1]
 
-    ans_angl = angl[1:].clone()
+    ans_angl = angl[1:].clone().detach().requires_grad_(True)
     angl = angl[:-1]
 
-    trgt = trgt[:-1].clone()
-    othr = othr[:-1].clone()
+    trgt = trgt[:-1].clone().detach().requires_grad_(True)
+    othr = othr[:-1].clone().detach().requires_grad_(True)
 
     return ([angl, cent, trgt, othr], [ans_angl, ans_cent], vfps)
 

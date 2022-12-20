@@ -68,8 +68,8 @@ model = SmallModel(
 net_dic = torch.load(model_path, map_location=torch.device("cpu"))
 model.load_state_dict(net_dic)
 
-pred_angl = angl.clone()
-pred_cent = cent.clone()
+pred_angl = angl.clone().detach().requires_grad_(True)
+pred_cent = cent.clone().detach().requires_grad_(True)
 h, c = None, None
 
 for seq, (trgt, othr) in enumerate(zip(segment[0][2], segment[0][3])):
