@@ -293,6 +293,12 @@ class Mfcc_Segment:
                                 segment = self.create_segment_dict(fps)
                                 result.append((_segment_path, None, _info))
                                 break
+                            if not (
+                                0 == np.min(seg["tlgp"]) or 0 == np.min(seg["olgp"])
+                            ):
+                                segment = self.create_segment_dict(fps)
+                                result.append((_segment_path, None, _info))
+                                break
 
                     (trgt, t_log_p) = self.get_feature(wpath, *term, csv_dt, spkID)
                     (othr, o_log_p) = self.get_feature(_ic0a, *term, csv_dt, spkID)

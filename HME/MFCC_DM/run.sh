@@ -5,7 +5,7 @@ python mfcc_building.py \
 --segment-size 15 \
 --segment-stride 5 \
 --segment-min-size 10 \
---sep_data --use-feature fbank \
+--use-feature fbank \
 --video-fps 29.97 \
 --sample-frequency 16000 \
 --frame-length 32 \
