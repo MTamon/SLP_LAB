@@ -1,14 +1,14 @@
 python ohta.py \
---datasite None \
---log log/train.log \
---train-result-path transition/train.csv \
---valid-result-path transition/valid.csv \
+--datasite /mnt/t4/log_segments/data \
+--log log/trainOH.log \
+--train-result-path transition/trainO.csv \
+--valid-result-path transition/validO.csv \
 --model-type mediam \
 --use-power \
 --use-delta \
 --use-person1 \
 --use-person2 \
---batch-size 32 \
+--batch-size 128 \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
