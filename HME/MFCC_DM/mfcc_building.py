@@ -282,25 +282,9 @@ class Mfcc_Segment:
 
                     _name = "_".join([f_name, str(_term[0]), str(_term[1])]) + ".seg"
                     _segment_path = "/".join([self.seg_path, _name])
-                    if os.path.isfile(_segment_path) and not self.redo:
-                        with open(_segment_path, "rb") as f:
-                            try:
-                                seg = pickle.load(f)
-                            except Exception as exc:
-                                print(_name)
-                                raise exc
-                        if "tlgp" in seg.keys() and "olgp" in seg.keys():
-                            if (
-                                not (0 in seg["tlgp"] or 0 in seg["olgp"])
-                                or self.sep_data
-                            ):
-                                if (
-                                    len(seg["tlgp"].shape) == 1
-                                    and len(seg["olgp"].shape) == 1
-                                ):
-                                    segment = self.create_segment_dict(fps)
-                                    result.append((_segment_path, None, _info))
-                                    break
+                    if self.skip(_segment_path, _name, result, _info):
+                        segment = self.create_segment_dict(fps)
+                        break
 
                     (trgt, t_log_p) = self.get_feature(wpath, *term, csv_dt, spkID)
                     (othr, o_log_p) = self.get_feature(_ic0a, *term, csv_dt, spkID)
@@ -340,6 +324,20 @@ class Mfcc_Segment:
                 segment["angl"].append(euler)
 
         return result
+
+    def skip(self, _segment_path, _name, result, _info):
+        if os.path.isfile(_segment_path) and not self.redo:
+            with open(_segment_path, "rb") as f:
+                try:
+                    seg = pickle.load(f)
+                except Exception as exc:
+                    raise EOFError(f"at {_name}") from exc
+            if "tlgp" in seg.keys() and "olgp" in seg.keys():
+                if not (0 in seg["tlgp"] or 0 in seg["olgp"]) or self.sep_data:
+                    if len(seg["tlgp"].shape) == 1 and len(seg["olgp"].shape) == 1:
+                        result.append((_segment_path, None, _info))
+                        return True
+        return False
 
     def get_feature(
         self, wav_path, start, stop, csv_dt, spID
