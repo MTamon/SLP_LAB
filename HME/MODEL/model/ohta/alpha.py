@@ -79,6 +79,8 @@ class Alpha(nn.Module):
     ) -> None:
         super(Alpha, self).__init__()
 
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
         self.encoder = Encoder(
             acostic_dim=acostic_dim,
             num_layers=num_layers,
@@ -91,18 +93,19 @@ class Alpha(nn.Module):
             use_power=use_power,
             use_delta=use_delta,
             use_person=use_person,
-        )
+        ).to(device=self.device)
 
         self.dense = nn.Linear(encoder_dim, encoder_dim)
         self.norm = nn.LayerNorm(encoder_dim)
 
         self.out_conv = OutConv(encoder_dim, num_channels, out_kernel_size)
+        self.out_conv = self.out_conv.to(device=self.device)
         out_conv_dim = self.out_conv.outputs_dim
 
         self.ch_modules = nn.ModuleDict(
             {
-                "centroid": ChannelDense(out_conv_dim),
-                "angle": ChannelDense(out_conv_dim),
+                "centroid": ChannelDense(out_conv_dim).to(device=self.device),
+                "angle": ChannelDense(out_conv_dim).to(device=self.device),
             }
         )
 

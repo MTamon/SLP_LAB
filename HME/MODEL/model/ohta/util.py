@@ -166,13 +166,15 @@ class AcosticSet(nn.Module):
 
         self.acostic_enc = ConvBlock.make_conv_blocks(
             input_dim, num_layers, kernel_size, num_channels, cnet_out_dim
-        )
+        ).to(device=self.device)
+
         if use_power:
             power_out = cnet_out_dim // 4
             power_channels = num_channels // 4
             self.power_enc = ConvBlock.make_conv_blocks(
                 1, num_layers, kernel_size, power_channels, power_out
-            )
+            ).to(device=self.device)
+
             self.acf_cat = AcosticCat()
 
         self.output_seq = self.get_output_seq()

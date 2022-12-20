@@ -27,7 +27,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 dataset = OhtaDataset(**vars(args))
 dataloader = OhtaDataloader(dataset, **vars(args))
-model = build_alpha(**vars(args))
+model = build_alpha(**vars(args)).to(device=device)
 
 optimizer = AdamW(
     params=model.parameters(),

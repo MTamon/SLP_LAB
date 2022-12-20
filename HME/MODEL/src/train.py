@@ -27,7 +27,6 @@ class Trainer(metaclass=ABCMeta):
         self.args = args
         self.kwargs = kwargs
 
-        self.net = net
         self.criterion = criterion
         self.optimizer = optimizer
 
@@ -41,7 +40,7 @@ class Trainer(metaclass=ABCMeta):
         self.mode = "train"
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-        net.to(device=self.device)
+        self.net = net.to(device=self.device)
         self._logging(f"Device : {self.device}")
         self.reset()
 
