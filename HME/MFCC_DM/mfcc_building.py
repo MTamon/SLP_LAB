@@ -287,15 +287,15 @@ class Mfcc_Segment:
                             seg = pickle.load(f)
                         if "tlgp" in seg.keys() and "olgp" in seg.keys():
                             if (
-                                len(seg["tlgp"].shape) == 1
-                                and len(seg["olgp"].shape) == 1
+                                not (0 in seg["tlgp"] or 0 in seg["olgp"])
+                                or self.sep_data
                             ):
                                 segment = self.create_segment_dict(fps)
                                 result.append((_segment_path, None, _info))
                                 break
-                            if (
-                                not (0 in seg["tlgp"] or 0 in seg["olgp"])
-                                or self.sep_data
+                            elif (
+                                len(seg["tlgp"].shape) == 1
+                                and len(seg["olgp"].shape) == 1
                             ):
                                 segment = self.create_segment_dict(fps)
                                 result.append((_segment_path, None, _info))
@@ -387,7 +387,7 @@ class Mfcc_Segment:
 
         if self.sep_data:
             _feature = mask.reshape((-1, 1)) * _feature
-            _log_pow = mask.reshape((-1, 1)) * _log_pow
+            _log_pow = mask.reshape((-1)) * _log_pow
 
         return (_feature, _log_pow)
 
