@@ -46,6 +46,12 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         help="Model type (size). 'mediam' or 'small' or 'large'",
     )
     parser.add_argument(
+        "--use-optimizer",
+        default="adamw",
+        type=str,
+        help="Choice optimizer 'adamw' or 'lamb'.",
+    )
+    parser.add_argument(
         "--skip-first-valid",
         default=False,
         action="store_true",

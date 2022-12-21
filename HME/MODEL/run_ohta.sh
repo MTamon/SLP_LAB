@@ -5,6 +5,7 @@ python ohta.py \
 --valid-result-path transition/validO.csv \
 --use-model alphaS \
 --model-type mediam \
+--use-optimizer adamw \
 --skip-first-valid \
 --use-power \
 --use-delta \

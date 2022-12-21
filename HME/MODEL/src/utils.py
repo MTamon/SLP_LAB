@@ -11,6 +11,10 @@ import cv2
 import torch
 import numpy as np
 
+from torch.optim import Optimizer
+from torch.optim import AdamW
+from model.ohta.modules.lamb import Lamb
+
 
 def add_args(parser: ArgumentParser) -> ArgumentParser:
     """add argument"""
@@ -195,6 +199,29 @@ def get_args() -> Namespace:
     check_args(_args)
 
     return _args
+
+
+def choice_optimizer(
+    params,
+    use_optimizer="adamw",
+    lr=1e-4,
+    eps=1e-6,
+    betas=(0.9, 0.999),
+    weight_decay=1e-2,
+    **_,
+) -> Optimizer:
+    if use_optimizer == "adamw":
+        return AdamW(
+            params=params,
+            lr=lr,
+            betas=betas,
+            eps=eps,
+            weight_decay=weight_decay,
+        )
+    elif use_optimizer == "lamb":
+        return Lamb(params=params)
+    else:
+        raise ValueError(f"Invalid optimizer name {use_optimizer}")
 
 
 def check_args(args: Namespace):

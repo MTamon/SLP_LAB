@@ -4,9 +4,8 @@ from tqdm import tqdm
 import pickle
 
 import torch
-from torch.optim import AdamW
 
-from src import add_datetime_path, fix_seed
+from src import add_datetime_path, fix_seed, choice_optimizer
 from src import set_logger
 from ohta_dataset import OhtaDataset
 from ohta_dataloader import OhtaDataloader
@@ -36,13 +35,7 @@ elif args.use_model == "alphaS":
 else:
     raise ValueError(f"Invalid model {args.use_model}")
 
-optimizer = AdamW(
-    params=model.parameters(),
-    lr=args.lr,
-    betas=args.betas,
-    eps=args.eps,
-    weight_decay=args.weight_decay,
-)
+optimizer = choice_optimizer(model.parameters(), **vars(args))
 
 trainer = OhtaTrainer(
     net=model,
