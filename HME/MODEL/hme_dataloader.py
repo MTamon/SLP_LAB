@@ -41,7 +41,7 @@ class HmeDataloader(Dataloader):
             _batch["src"]["othr"].append(record[0][3])
 
             _batch["target"]["angl"].append(record[1][0])
-            _batch["target"]["cent"].append(record[2][1])
+            _batch["target"]["cent"].append(record[1][1])
 
         return _batch
 
