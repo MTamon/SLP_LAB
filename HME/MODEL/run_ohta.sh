@@ -3,6 +3,7 @@ python ohta.py \
 --log log/trainOH.log \
 --train-result-path transition/trainO.csv \
 --valid-result-path transition/validO.csv \
+--use-model alphaS \
 --model-type mediam \
 --use-power \
 --use-delta \
