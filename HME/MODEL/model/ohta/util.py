@@ -47,6 +47,8 @@ class Encoder(nn.Module):
         self.use_delta = use_delta
         self.use_person = use_person
 
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
         afe_num = sum(use_person) * 2 if use_delta else 1
         physic_out = output_dim // 2
         self.afe_out = output_dim // afe_num // 2
@@ -86,22 +88,22 @@ class Encoder(nn.Module):
         )
 
         if self.use_person[0]:
-            AFEs["AFE1"] = AcosticSet(*afe_inputs)
+            AFEs["AFE1"] = AcosticSet(*afe_inputs).to(device=self.device)
         if self.use_person[1]:
-            AFEs["AFE2"] = AcosticSet(*afe_inputs)
+            AFEs["AFE2"] = AcosticSet(*afe_inputs).to(device=self.device)
         if self.use_person[0] and self.use_delta:
-            AFEs["dAFE1"] = AcosticSet(*afe_inputs)
+            AFEs["dAFE1"] = AcosticSet(*afe_inputs).to(device=self.device)
         if self.use_person[1] and self.use_delta:
-            AFEs["dAFE2"] = AcosticSet(*afe_inputs)
+            AFEs["dAFE2"] = AcosticSet(*afe_inputs).to(device=self.device)
 
         return AFEs
 
     def _fbank_process(
         self,
-        fbank1=(None, None),
-        fbank2=(None, None),
-        log_power1=(None, None),
-        log_power2=(None, None),
+        fbank1: List[torch.Tensor] = [None, None],
+        fbank2: List[torch.Tensor] = [None, None],
+        log_power1: List[torch.Tensor] = [None, None],
+        log_power2: List[torch.Tensor] = [None, None],
     ):
         if self.use_person[0]:
             out_afe = self.AFEs["AFE1"](fbank1[0], log_power1[0])
@@ -120,7 +122,7 @@ class Encoder(nn.Module):
     def forward(self, input_tensor: List[List[torch.Tensor]]):
         """
         Args:
-            input_tensor (List[torch.Tensor]): ``[angle, centroid, fbank1, fbank2, log_power1, log_power2]``
+            input_tensor (List[List[torch.Tensor]]): ``[angle, centroid, fbank1, fbank2, log_power1, log_power2]``
         """
         angle = input_tensor[0]
         centroid = input_tensor[1]
@@ -131,7 +133,7 @@ class Encoder(nn.Module):
 
         batch_size = angle[0].shape[0]
 
-        physic_tensor = torch.cat((*angle, *centroid), dim=-1)
+        physic_tensor = torch.cat((*angle, *centroid), dim=-1).to(device=self.device)
         physic_tensor = physic_tensor.view(size=[batch_size, -1])
         physic_output = self.PFE(physic_tensor)
 
@@ -204,7 +206,7 @@ class AcosticSet(nn.Module):
         Returns:
             torch.FloatTensor: ``(batch, output_dim)``
         """
-        output = fbank.transpose(1, 2)
+        output = fbank.transpose(1, 2).to(device=self.device)
         length = torch.tensor(fbank.shape[1]).repeat(fbank.shape[0])
         output_length = length.to(device=self.device)
 
