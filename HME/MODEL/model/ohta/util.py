@@ -1,6 +1,6 @@
 from model.ohta.modules.ContextNet.contextnet.convolution import ConvBlock
 
-from typing import List
+from typing import List, Iterable
 import torch
 import torch.nn as nn
 
@@ -100,10 +100,10 @@ class Encoder(nn.Module):
 
     def _fbank_process(
         self,
-        fbank1: List[torch.Tensor] = [None, None],
-        fbank2: List[torch.Tensor] = [None, None],
-        log_power1: List[torch.Tensor] = [None, None],
-        log_power2: List[torch.Tensor] = [None, None],
+        fbank1: Iterable[torch.Tensor] = (None, None),
+        fbank2: Iterable[torch.Tensor] = (None, None),
+        log_power1: Iterable[torch.Tensor] = (None, None),
+        log_power2: Iterable[torch.Tensor] = (None, None),
     ):
         if self.use_person[0]:
             out_afe = self.AFEs["AFE1"](fbank1[0], log_power1[0])
@@ -212,8 +212,8 @@ class AcosticSet(nn.Module):
 
         if self.use_power:
             iterator = zip(self.acostic_enc, self.power_enc)
-            power_length = length
-            power_output = log_power.unsqueeze(1)
+            power_length = length.to(device=self.device)
+            power_output = log_power.unsqueeze(1).to(device=self.device)
         else:
             iterator = self.acostic_enc
 
@@ -269,6 +269,6 @@ class PhysicSet(nn.Module):
             torch.FloatTensor: ``[batch, output_dim]``
         """
 
-        output = self.net(input_tensor)
+        output = self.net(input_tensor.to(device=self.device))
 
         return output
