@@ -49,8 +49,10 @@ class OhtaTrainer(Trainer):
         with torch.cuda.amp.autocast():
             (_angl, _cent) = self.net(source)
 
-            loss_angl = torch.sqrt(torch.sum((_angl - target[0]) ** 2) / batch_size)
-            loss_cent = torch.sqrt(torch.sum((_cent - target[1]) ** 2) / batch_size)
+            # loss_angl = torch.sqrt(torch.sum((_angl - target[0]) ** 2) / batch_size)
+            # loss_cent = torch.sqrt(torch.sum((_cent - target[1]) ** 2) / batch_size)
+            loss_angl = torch.sum(torch.abs(_angl - target[0])) / batch_size
+            loss_cent = torch.sum(torch.abs(_cent - target[1])) / batch_size
 
             loss = loss_angl + loss_cent
             _loss = self.learn(loss)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 from typing import List, Dict
 import torch
+import joblib
 
 from src import override
 from src import Dataloader
@@ -32,8 +33,11 @@ class OhtaDataloader(Dataloader):
         record = self.dataset[batch_idx[0]]
         _batch = record
 
-        for _idx in batch_idx[1:]:
-            record = self.dataset[_idx]
+        result = joblib.Parallel(n_jobs=-1)(
+            joblib.delayed(self.thread)(i) for i in batch_idx[1:]
+        )
+
+        for record in result:
             _batch[0][0] += record[0][0]
             _batch[0][1] += record[0][1]
             _batch[0][2] += record[0][2]
@@ -69,6 +73,9 @@ class OhtaDataloader(Dataloader):
             raise exc
 
         return batch
+
+    def thread(self, idx):
+        return self.dataset[idx]
 
     @override(Dataloader)
     def copy(self) -> OhtaDataloader:

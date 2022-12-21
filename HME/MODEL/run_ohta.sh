@@ -10,7 +10,7 @@ python ohta.py \
 --use-delta \
 --use-person1 \
 --use-person2 \
---batch-size 256 \
+--batch-size 512 \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
