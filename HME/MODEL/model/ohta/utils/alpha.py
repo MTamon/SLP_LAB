@@ -34,6 +34,12 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
         help="Path for result-file.",
     )
     parser.add_argument(
+        "--use-model",
+        default="alpha",
+        type=str,
+        help="Model type (architecture). 'alpha' or 'alphaS'",
+    )
+    parser.add_argument(
         "--model-type",
         default="mediam",
         type=str,

@@ -12,6 +12,7 @@ from ohta_dataset import OhtaDataset
 from ohta_dataloader import OhtaDataloader
 from ohta_trainer import OhtaTrainer
 from model.ohta.alpha import build_alpha
+from model.ohta.alphaS import build_alphaS
 from model.ohta.utils import get_args
 
 SEED = 42
@@ -27,7 +28,13 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 dataset = OhtaDataset(**vars(args))
 dataloader = OhtaDataloader(dataset, **vars(args))
-model = build_alpha(**vars(args)).to(device=device)
+
+if args.use_model == "alpha":
+    model = build_alpha(**vars(args)).to(device=device)
+elif args.use_model == "alphaS":
+    model = build_alphaS(**vars(args)).to(device=device)
+else:
+    raise ValueError(f"Invalid model {args.use_model}")
 
 optimizer = AdamW(
     params=model.parameters(),
