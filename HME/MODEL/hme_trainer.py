@@ -84,8 +84,10 @@ class HmeTrainer(Trainer):
 
             div = torch.sum(mask_a) * 2
 
-            loss_angl = torch.sum((pred_angl - trg_angl) ** 2) / div
-            loss_cent = torch.sum((pred_cent - trg_cent) ** 2) / div
+            loss_angl = torch.sqrt(torch.sum((pred_angl - trg_angl) ** 2) / div)
+            loss_cent = torch.sqrt(torch.sum((pred_cent - trg_cent) ** 2) / div)
+            # loss_angl = torch.sum((pred_angl - trg_angl) ** 2) / div
+            # loss_cent = torch.sum((pred_cent - trg_cent) ** 2) / div
 
             loss = loss_angl + loss_cent
             loss = self.learn(loss)
