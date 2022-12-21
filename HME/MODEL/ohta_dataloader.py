@@ -25,6 +25,7 @@ class OhtaDataloader(Dataloader):
         )
         self.args = args
         self.kwargs = kwargs
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     @override(Dataloader)
     def collect_batch(
@@ -56,16 +57,34 @@ class OhtaDataloader(Dataloader):
         try:
             batch = [
                 [
-                    [torch.stack(_batch[0][0]), torch.stack(_batch[0][1])],
-                    [torch.stack(_batch[0][2]), torch.stack(_batch[0][3])],
-                    [torch.stack(_batch[0][4]), torch.stack(_batch[0][5])],
-                    [torch.stack(_batch[0][6]), torch.stack(_batch[0][7])],
-                    [torch.stack(_batch[0][8]), torch.stack(_batch[0][9])],
-                    [torch.stack(_batch[0][10]), torch.stack(_batch[0][11])],
+                    [
+                        torch.stack(_batch[0][0]).to(device=self.device),
+                        torch.stack(_batch[0][1]).to(device=self.device),
+                    ],
+                    [
+                        torch.stack(_batch[0][2]).to(device=self.device),
+                        torch.stack(_batch[0][3]).to(device=self.device),
+                    ],
+                    [
+                        torch.stack(_batch[0][4]).to(device=self.device),
+                        torch.stack(_batch[0][5]).to(device=self.device),
+                    ],
+                    [
+                        torch.stack(_batch[0][6]).to(device=self.device),
+                        torch.stack(_batch[0][7]).to(device=self.device),
+                    ],
+                    [
+                        torch.stack(_batch[0][8]).to(device=self.device),
+                        torch.stack(_batch[0][9]).to(device=self.device),
+                    ],
+                    [
+                        torch.stack(_batch[0][10]).to(device=self.device),
+                        torch.stack(_batch[0][11]).to(device=self.device),
+                    ],
                 ],
                 [
-                    torch.stack(_batch[1][0]),
-                    torch.stack(_batch[1][1]),
+                    torch.stack(_batch[1][0]).to(device=self.device),
+                    torch.stack(_batch[1][1]).to(device=self.device),
                 ],
             ]
         except Exception as exc:

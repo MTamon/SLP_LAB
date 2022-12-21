@@ -154,7 +154,11 @@ class OhtaDataset(Dataset):
         vfps = segment["vfps"]
         ffps = segment["ffps"]
 
-        common = {"device": self.device, "dtype": torch.float32, "requires_grad": True}
+        common = {
+            "device": torch.device("cpu"),
+            "dtype": torch.float32,
+            "requires_grad": True,
+        }
 
         i = file_pointer[1]
 
