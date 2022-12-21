@@ -259,6 +259,7 @@ class PhysicSet(nn.Module):
             nn.ReLU(),
             nn.Linear(self.hidden_size4, output_dim),
         )
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def forward(self, input_tensor: torch.FloatTensor) -> torch.FloatTensor:
         """
