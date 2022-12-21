@@ -66,23 +66,26 @@ t_f.close()
 v_f = open(valid_fpath, mode="w", encoding="utf-8")
 v_f.write(f"loss, acc, {valid_length}\n")
 v_f.close()
+fpath = {"train": train_fpath, "valid": valid_fpath}
 
 
 def process(_mode):
     phase_loss = []
     phase_acc = []
 
+    text = ""
+
     trainer.set_mode(_mode)
 
     with tqdm(trainer, desc=_mode) as prog:
-        for loss, acc in prog:
+        for i, (loss, acc) in enumerate(prog):
 
-            if _mode == "train":
-                with open(train_fpath, mode="a", encoding="utf-8") as f:
-                    f.write(f"{loss},{acc}\n")
+            if i % 100 == 0:
+                with open(fpath[_mode], mode="a", encoding="utf-8") as f:
+                    f.write(text)
+                    text = ""
             else:
-                with open(valid_fpath, mode="a", encoding="utf-8") as f:
-                    f.write(f"{loss},{acc}\n")
+                text += f"{loss},{acc}\n"
 
             prog.postfix = f"L:{round(loss, 2)}, A:{round(acc, 2)}"
 
@@ -95,9 +98,10 @@ def process(_mode):
     return phase_loss, phase_acc
 
 
-logger.info(" Init Valid-Mode >>> ")
-_loss, _acc = process("valid")
-logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
+if not args.skip_first_valid:
+    logger.info(" Init Valid-Mode >>> ")
+    _loss, _acc = process("valid")
+    logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
 
 for current_epoch in range(args.epoch):
     logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)

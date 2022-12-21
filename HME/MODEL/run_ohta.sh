@@ -5,11 +5,12 @@ python ohta.py \
 --valid-result-path transition/validO.csv \
 --use-model alphaS \
 --model-type mediam \
+--skip-first-valid \
 --use-power \
 --use-delta \
 --use-person1 \
 --use-person2 \
---batch-size 128 \
+--batch-size 256 \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
