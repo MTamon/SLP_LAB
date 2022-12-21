@@ -5,8 +5,9 @@ import pickle
 
 import torch
 
-from src import add_datetime_path, fix_seed, choice_optimizer
 from src import set_logger
+from src import choice_optimizer
+from src import add_datetime_path, fix_seed
 from ohta_dataset import OhtaDataset
 from ohta_dataloader import OhtaDataloader
 from ohta_trainer import OhtaTrainer

@@ -201,29 +201,6 @@ def get_args() -> Namespace:
     return _args
 
 
-def choice_optimizer(
-    params,
-    use_optimizer="adamw",
-    lr=1e-4,
-    eps=1e-6,
-    betas=(0.9, 0.999),
-    weight_decay=1e-2,
-    **_,
-) -> Optimizer:
-    if use_optimizer == "adamw":
-        return AdamW(
-            params=params,
-            lr=lr,
-            betas=betas,
-            eps=eps,
-            weight_decay=weight_decay,
-        )
-    elif use_optimizer == "lamb":
-        return Lamb(params=params)
-    else:
-        raise ValueError(f"Invalid optimizer name {use_optimizer}")
-
-
 def check_args(args: Namespace):
     if not args.use_model in ["simple", "relu-used", "small"]:
         ValueError(f"Invalid --use-mode value {args.use_model}")
@@ -622,3 +599,26 @@ def visualize_result(
         frame_writer(frame, video)
 
     video.close_writer()
+
+
+def choice_optimizer(
+    params,
+    use_optimizer="adamw",
+    lr=1e-4,
+    eps=1e-6,
+    betas=(0.9, 0.999),
+    weight_decay=1e-2,
+    **_,
+) -> Optimizer:
+    if use_optimizer == "adamw":
+        return AdamW(
+            params=params,
+            lr=lr,
+            betas=betas,
+            eps=eps,
+            weight_decay=weight_decay,
+        )
+    elif use_optimizer == "lamb":
+        return Lamb(params=params)
+    else:
+        raise ValueError(f"Invalid optimizer name {use_optimizer}")
