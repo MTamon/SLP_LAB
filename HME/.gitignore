@@ -138,3 +138,5 @@ log/**
 data/backup/
 data/data/
 data/test/
+
+**.pth
