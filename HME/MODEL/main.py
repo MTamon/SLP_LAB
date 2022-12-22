@@ -101,7 +101,8 @@ logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2)
 for current_epoch in range(args.epoch):
     logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)
 
-    for mode in ["train", "valid"]:
+    # for mode in ["train", "valid"]:
+    for mode in ["train"]:
         _loss, _acc = process(mode)
         logger.info(" Result |[ Loss : %s, Acc : %s ]|", _loss, _acc)
 
