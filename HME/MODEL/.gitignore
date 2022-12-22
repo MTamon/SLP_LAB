@@ -131,6 +131,7 @@ dmypy.json
 # log data
 log/**log**
 model/**.pth
+checkpoint/**.pth
 transition/**.csv
 loader/**.dl
 
