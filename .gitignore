@@ -142,6 +142,7 @@ HME/data/**.wav
 HME/data/**.mp4
 HME/data/**.pth
 data/**/**
+HME/MODEL/checkpoint/**.pth
 
 # modules
 HME/HME-DM/modules/DataFileCollector
