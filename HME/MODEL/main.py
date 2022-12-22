@@ -94,9 +94,9 @@ def process(_mode):
     return phase_loss, phase_acc
 
 
-logger.info(" Init Valid-Mode >>> ")
-_loss, _acc = process("valid")
-logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
+# logger.info(" Init Valid-Mode >>> ")
+# _loss, _acc = process("valid")
+# logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
 
 for current_epoch in range(args.epoch):
     logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)
