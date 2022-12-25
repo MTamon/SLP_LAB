@@ -67,6 +67,12 @@ class Dataloader:
 
         self.table = self.batching(_data_list)
 
+    def get_file_names(self) -> List[str]:
+        res = []
+        for idx in self.idx_list:
+            res.append(self.dataset[idx])
+        return res
+
     def batching(self, data_list: NDArray[Any]) -> List[NDArray[Any]]:
         iteration = int(len(data_list) / self.batch_size)
         data_list = data_list[: iteration * self.batch_size]

@@ -185,6 +185,55 @@ def add_args(parser: ArgumentParser) -> ArgumentParser:
     return parser
 
 
+def add_vi_args(parser: ArgumentParser) -> ArgumentParser:
+    """add argument"""
+
+    parser.add_argument(
+        "--seg-path",
+        default=None,
+        type=str,
+        help="Path to the site which stor data.",
+    )
+    parser.add_argument(
+        "--wav-path",
+        default=None,
+        type=str,
+        help="Path to the site which stor data.",
+    )
+    parser.add_argument(
+        "--use-model",
+        default="small",
+        type=str,
+        help="Use model",
+    )
+    parser.add_argument(
+        "--model-path",
+        default="HME/MODEL/checkpoint/_model.pth",
+        type=str,
+        help="Path for model(.pth).",
+    )
+    parser.add_argument(
+        "--output_path",
+        default="HME/MODEL/out/pred_face.mp4",
+        type=str,
+        help="Path for result-file.",
+    )
+    parser.add_argument(
+        "--output_pathC",
+        default="HME/MODEL/out/pred_faceC.mp4",
+        type=str,
+        help="Path for result-file.",
+    )
+    parser.add_argument(
+        "--skip-wav-cat",
+        default=False,
+        action="store_true",
+        help="Skip mp4 and wav file concatenate.",
+    )
+
+    return parser
+
+
 def get_args() -> Namespace:
     """generate ArgumentParser instance."""
 
@@ -197,6 +246,19 @@ def get_args() -> Namespace:
     _args.betas = (_args.beta1, _args.beta2)
 
     check_args(_args)
+
+    return _args
+
+
+def get_vi_args() -> Namespace:
+    """generate ArgumentParser instance."""
+
+    parser = ArgumentParser(
+        "This program is for head-motion-estimation model learning."
+    )
+    parser = add_vi_args(parser)
+
+    _args = parser.parse_args()
 
     return _args
 
@@ -584,8 +646,8 @@ def visualize_result(
     for (angl, cent) in progress_iterator:
         frame = next(video)
         frame[:, :, :] = 0
-        angl = np.array(angl.to(dtype=torch.float64))
-        cent = np.array(cent.to(dtype=torch.float64))
+        angl = np.array(angl.to(dtype=torch.float64).detach().numpy())
+        cent = np.array(cent.to(dtype=torch.float64).detach().numpy())
 
         R = rotation_matrix(*angl, "xyz")
 

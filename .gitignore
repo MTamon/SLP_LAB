@@ -141,6 +141,7 @@ out/
 HME/data/**.wav
 HME/data/**.mp4
 HME/data/**.pth
+HME/data/visual/**
 data/**/**
 HME/MODEL/checkpoint/**.pth
 
