@@ -1,23 +1,24 @@
 python main.py \
---datasite ../data/test/segments/data \
+--datasite /mnt/t4/log_segments/data \
 --log log/train.log \
 --train-result-path transition/train.csv \
 --valid-result-path transition/valid.csv \
+--use-model simple \
 --ac-feature-size 80 \
 --ac-feature-width 32 \
---lstm-dim 16 \
---lstm-input-dim 32 \
---lstm-output-dim 16 \
+--lstm-dim 1024 \
+--lstm-input-dim 2048 \
+--lstm-output-dim 2048 \
 --num-layer 2 \
---ac-linear-dim 8 \
+--ac-linear-dim 512 \
 --batch-size 128 \
 --valid-rate 0.3 \
 --truncate-excess \
 --do-shuffle \
---epoch 20 \
---model-save-path checkpoint/_model.pth \
+--epoch 50 \
+--model-save-path checkpoint/simple.pth \
 --lr 1e-4 \
 --beta1 0.9 \
---beta2 0.98 \
+--beta2 0.999 \
 --eps 1e-8 \
---weight-decay 1e-6
+--weight-decay 1e-2
