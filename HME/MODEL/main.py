@@ -2,6 +2,7 @@
 
 from tqdm import tqdm
 import pickle
+import os
 
 import torch
 from torch.optim import AdamW
@@ -94,17 +95,22 @@ def process(_mode):
     return phase_loss, phase_acc
 
 
-logger.info(" Init Valid-Mode >>> ")
-_loss, _acc = process("valid")
-logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
+path = ".".join(args.model_save_path.split(".")[:-1]) + "E00.pth"
+if not os.path.isfile(path):
+    logger.info(" Init Valid-Mode >>> ")
+    _loss, _acc = process("valid")
+    logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
 
 for current_epoch in range(args.epoch):
+    epo_inf = f"0{current_epoch}" if current_epoch < 10 else str(current_epoch)
+    path = ".".join(args.model_save_path.split(".")[:-1]) + f"E{epo_inf}.pth"
+    if os.path.isfile(path):
+        continue
+
     logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)
 
     for mode in ["train", "valid"]:
         _loss, _acc = process(mode)
         logger.info(" Result |[ Loss : %s, Acc : %s ]|", _loss, _acc)
 
-    epo_inf = f"0{current_epoch}" if current_epoch < 10 else str(current_epoch)
-    path = ".".join(args.model_save_path.split(".")[:-1]) + f"E{epo_inf}.pth"
     trainer.save_model(path)
