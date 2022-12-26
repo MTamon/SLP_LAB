@@ -106,7 +106,7 @@ for current_epoch in range(args.epoch):
     path = ".".join(args.model_save_path.split(".")[:-1]) + f"E{epo_inf}.pth"
     if os.path.isfile(path):
         continue
-    trainer.net = HmeTrainer.load_model(path)
+    trainer.net = HmeTrainer.load_model(model, path, device=device)
 
     logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)
 
