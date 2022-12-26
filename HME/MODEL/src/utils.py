@@ -189,16 +189,16 @@ def add_vi_args(parser: ArgumentParser) -> ArgumentParser:
     """add argument"""
 
     parser.add_argument(
-        "--seg-path",
+        "--inputs",
         default=None,
         type=str,
         help="Path to the site which stor data.",
     )
     parser.add_argument(
-        "--wav-path",
+        "--outsite",
         default=None,
         type=str,
-        help="Path to the site which stor data.",
+        help="Path to the site which be outputed.",
     )
     parser.add_argument(
         "--use-model",
@@ -213,22 +213,16 @@ def add_vi_args(parser: ArgumentParser) -> ArgumentParser:
         help="Path for model(.pth).",
     )
     parser.add_argument(
-        "--output_path",
-        default="HME/MODEL/out/pred_face.mp4",
-        type=str,
-        help="Path for result-file.",
-    )
-    parser.add_argument(
-        "--output_pathC",
-        default="HME/MODEL/out/pred_faceC.mp4",
-        type=str,
-        help="Path for result-file.",
-    )
-    parser.add_argument(
         "--skip-wav-cat",
         default=False,
         action="store_true",
         help="Skip mp4 and wav file concatenate.",
+    )
+    parser.add_argument(
+        "--tmp-path",
+        default="HME/MODEL/out/v1/tmp",
+        type=str,
+        help="Path for temporary.",
     )
 
     return parser
@@ -628,6 +622,7 @@ class Video:
 
 def visualize_result(
     video: Video,
+    original: Tuple[torch.Tensor, torch.Tensor],
     result: Tuple[torch.Tensor, torch.Tensor],
     landmarks: np.ndarray,
     path: str,
@@ -639,23 +634,36 @@ def visualize_result(
     video.set_out_path(path)
 
     if tqdm_visual:
-        progress_iterator = zip(tqdm(result[0], desc="  visualize-all "), result[1])
+        progress_iterator = zip(
+            tqdm(result[0], desc="  visualize-all "),
+            result[1],
+            original[0],
+            original[1],
+        )
     else:
-        progress_iterator = zip(*result)
+        progress_iterator = zip(*result, *original)
 
-    for (angl, cent) in progress_iterator:
+    for (angl, cent, o_angl, o_cent) in progress_iterator:
         frame = next(video)
         frame[:, :, :] = 0
         angl = np.array(angl.to(dtype=torch.float64).detach().numpy())
         cent = np.array(cent.to(dtype=torch.float64).detach().numpy())
+        o_angl = np.array(o_angl.to(dtype=torch.float64).detach().numpy())
+        o_cent = np.array(o_cent.to(dtype=torch.float64).detach().numpy())
 
         R = rotation_matrix(*angl, "xyz")
+        _R = rotation_matrix(*o_angl, "xyz")
 
         _landmarks = np.dot(R, landmarks.copy().T).T + cent
+        o_landmarks = np.dot(_R, landmarks.copy().T).T + o_cent
 
         for pt in _landmarks:
             cv2.drawMarker(
-                frame, (int(pt[0]), int(pt[1])), (254, 254, 254), cv2.MARKER_STAR, 2
+                frame, (int(pt[0]), int(pt[1])), (254, 254, 254), cv2.MARKER_STAR, 3
+            )
+        for pt in o_landmarks:
+            cv2.drawMarker(
+                frame, (int(pt[0]), int(pt[1])), (254, 100, 100), cv2.MARKER_STAR, 2
             )
 
         frame_writer(frame, video)

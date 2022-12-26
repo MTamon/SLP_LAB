@@ -11,6 +11,7 @@ python main.py \
 --lstm-output-dim 2048 \
 --num-layer 2 \
 --ac-linear-dim 512 \
+--pos-feature-size 512
 --batch-size 128 \
 --valid-rate 0.3 \
 --truncate-excess \
