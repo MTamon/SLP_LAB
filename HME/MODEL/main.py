@@ -101,12 +101,17 @@ if not os.path.isfile(path):
     _loss, _acc = process("valid")
     logger.info(" Result |[ Loss : %s, Acc : %s ]|", round(_loss, 2), round(_acc, 2))
 
+prev_path = None
+
 for current_epoch in range(args.epoch):
     epo_inf = f"0{current_epoch}" if current_epoch < 10 else str(current_epoch)
     path = ".".join(args.model_save_path.split(".")[:-1]) + f"E{epo_inf}.pth"
     if os.path.isfile(path):
+        prev_path = path
         continue
-    trainer.net = HmeTrainer.load_model(model, path, device=device)
+    if prev_path is not None:
+        trainer.net = HmeTrainer.load_model(model, prev_path, device=device)
+        prev_path = None
 
     logger.info(" Epoch >>> %s / %s", (current_epoch + 1), args.epoch)
 
